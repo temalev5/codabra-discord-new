@@ -133,6 +133,7 @@ function Info(){
     https.get("https://dragonapi.codabra.org/api/v1/lesson/?datetime_start__range=" +
                 datetime_today_range+"&limit=999",
                 options, response)
+
 }
 
 module.exports.Info = Info

@@ -25,7 +25,7 @@ let abb_name = [
     ['Гриша','Григорий'],
     ['Геля','Ангелина'],
 
-    ['Даня','Даниил'],
+    ['Даня','Даниил','Данил'],
     ['Даша','Дарья'],
     ['Дима','Дмитрий'],
     ['Дина','Диана'],
@@ -219,9 +219,16 @@ function inChannel(first_name, last_name, channel){
     for(var i=0;i<members.length;i++){
         let fn_mark = false;
         let ln_mark = false;
-        if (!members[i].nickname) continue
-        let nickname = members[i].nickname.split(' ');
+        let nickname;
+
+        if (!members[i].nickname)
+            nickname = members[i].user.username
+        else
+            nickname = members[i].nickname
+
+        nickname = nickname.split(' ');
         let len = nickname.length
+
         for(var j=0;j<len;j++){
             let c = abb_name.find(a=> a.findIndex(b=>
                                      b.toLowerCase().replace(/ё/g,'е') == 
@@ -261,3 +268,5 @@ function inChannel(first_name, last_name, channel){
 }
 
 module.exports.timeManagment = timeManagment
+
+global.tInChannel = tInChannel
