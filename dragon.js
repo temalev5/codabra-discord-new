@@ -120,6 +120,9 @@ function Info(){
     lesson_data = []
     counter = 0;
     working = true;
+
+    dk.clearTimmers()
+
     // get current date in dragon format
     let today = new Date();
     let datetime_today_range = today.getFullYear() + '-' 

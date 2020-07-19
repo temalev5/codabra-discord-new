@@ -29,7 +29,9 @@ client.on('ready', () => {
 
     if (!guild) send(admin, 'Не найден сервер SERVER_ID: ' + server_id)
 
+
     dragon.Info()
+    setTimeout(dragon.Info,10000);
     setInterval(dragon.Info, (24-hr) * 3600000 )
 
 })

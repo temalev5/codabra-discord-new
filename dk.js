@@ -88,6 +88,14 @@ let abb_name = [
 
     ['Юра','Юрий']
 ]
+let timmers = []
+
+function clearTimmers(){
+    for (var i=0;i<timmers.length;i++){
+        clearTimeout(timmers[i])
+    }
+    timmers = []
+}
 
 function setTimmer(minutes, data, func){
     for(var i=0;i<data.length;i++){
@@ -97,7 +105,7 @@ function setTimmer(minutes, data, func){
         if (( less_date - current_time) <= 0 ){
             continue
         }
-        setTimeout(func, less_date - current_time, data[i])
+        timmers.push(setTimeout(func, less_date - current_time, data[i]));
     }
 }
 
@@ -270,3 +278,4 @@ function inChannel(first_name, last_name, channel){
 module.exports.timeManagment = timeManagment
 
 global.tInChannel = tInChannel
+module.exports.clearTimmers = clearTimmers
