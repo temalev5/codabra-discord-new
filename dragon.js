@@ -63,6 +63,7 @@ function onend(){
         let id_lesson;
         if(res.role==1){
             id_lesson = lesson_data.findIndex( less=> less.participants.findIndex(part=> part.id == res.id) != -1)
+
             let id_participants = lesson_data[id_lesson].participants.findIndex(part=> part.id == res.id)
             
             let lead = res.leads.find(lead => ("group" in lead)  ? (lead.group) : lead.group.id == lesson_data[id_lesson].id)

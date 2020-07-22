@@ -214,7 +214,7 @@ function mStatus(member){
 }
     
 
-function inChannel(first_name, last_name, channel){
+function inChannel(first_name='', last_name='', channel){
     let members;
 
     if (channel){
