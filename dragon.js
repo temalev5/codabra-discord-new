@@ -41,6 +41,11 @@ function onend(){
             return
         }
 
+        if (res.participants.length<=0){
+            lesson_data.splice(id_group, 1)
+            return
+        }
+
         if(!res.teacher) {
             lesson_data[id_group].counter++
         }
@@ -64,6 +69,10 @@ function onend(){
         if(res.role==1){
             id_lesson = lesson_data.findIndex( less=> less.participants.findIndex(part=> part.id == res.id) != -1)
 
+            if (id_lesson==-1){
+                let a = 10
+            }
+            
             let id_participants = lesson_data[id_lesson].participants.findIndex(part=> part.id == res.id)
             
             let lead = res.leads.find(lead => ("group" in lead)  ? (lead.group) : lead.group.id == lesson_data[id_lesson].id)
@@ -75,6 +84,10 @@ function onend(){
         }
         else if(res.role==2){
             id_lesson = lesson_data.findIndex(less=>less.teacher.id == res.id)
+
+            if (id_lesson==-1){
+                let a = 10
+            }
 
             delete lesson_data[id_lesson].teacher.id
             lesson_data[id_lesson].teacher.first_name = res.first_name

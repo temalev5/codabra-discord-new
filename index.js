@@ -20,6 +20,7 @@ global.options = {
     }
 }
 
+
 global.guild;
 
 client.on('ready', () => {
@@ -31,7 +32,6 @@ client.on('ready', () => {
 
 
     dragon.Info()
-    setTimeout(dragon.Info,10000);
     setInterval(dragon.Info, (24-hr) * 3600000 )
 
 })
