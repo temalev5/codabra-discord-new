@@ -39,5 +39,5 @@ client.on('ready', () => {
 client.on('message', message )
 client.on('messageUpdate', message )
 
-client.login('NzA1MzUxNjc5MjIyMDg3NzA0.XqqeUQ.7q2nm5sKDpCkI3g0rwsv6CgUElM');
+client.login(process.env.discord);
 

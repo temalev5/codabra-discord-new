@@ -522,8 +522,8 @@ function message(msg,mmsg){
         
         let groups = []
 
-        if(message.search(/[а-яА-Я][.][0-9а-яА-Я-()]*/gm) != -1){
-            let g = message.match(/[а-яА-Я][.][0-9а-яА-Я-()]*/gm)
+        if(message.search(/[а-яА-Я][.][0-9а-яА-Я]*[.]?[0-9а-яА-Я]*[-][0-9]+[0-9-()]*/gm) != -1){
+            let g = message.match(/[а-яА-Я][.][0-9а-яА-Я]*[.]?[0-9а-яА-Я]*[-][0-9]+[0-9-()]**/gm)
             for (var i=0;i<g.length;i++){
                 groups.push(g[i].toUpperCase())
             }
