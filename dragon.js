@@ -31,7 +31,7 @@ function onend(){
 
             id_group--;
 
-            if(!res[i].teacher) {
+            if(!res[i].teacher.id) {
                 lesson_data[id_group].counter++
             }
             else{
