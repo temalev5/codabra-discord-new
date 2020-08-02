@@ -522,6 +522,18 @@ function message(msg,mmsg){
         
         let groups = []
 
+        if(message.search(/[а-яА-Я][.][0-9а-яА-Я-()]*/gm) != -1){
+            let g = message.match(/[а-яА-Я][.][0-9а-яА-Я-()]*/gm)
+            for (var i=0;i<g.length;i++){
+                groups.push(g[i].toUpperCase())
+            }
+        }
+
+        if (msg.member.roles.cache.find(role => role.name == "Преподаватель" || role.name == "Менеджер")){
+            togleRole(msg, groups, message.split(' ').length )
+            return
+        }
+
         if (message.indexOf("преподаватель") != -1 || message.replace(/ё/g,'е').indexOf("стажер") != -1 || message.indexOf("менеджер") != -1){
             msg.member.createDM().then( (dm) => { 
                 dm.send('',{
@@ -535,13 +547,6 @@ function message(msg,mmsg){
             }) })
             msg.delete()
             return
-        }
-
-        if(message.search(/[а-яА-Я][.][0-9а-яА-Я-()]*/gm) != -1){
-            let g = message.match(/[а-яА-Я][.][0-9а-яА-Я-()]*/gm)
-            for (var i=0;i<g.length;i++){
-                groups.push(g[i].toUpperCase())
-            }
         }
 
         if (groups==0) { 
@@ -569,12 +574,6 @@ function message(msg,mmsg){
             msg.delete()
             return
 
-        }
-
-
-        if (msg.member.roles.cache.find(role => role.name == "Преподаватель" || role.name == "Менеджер")){
-            togleRole(msg, groups, message.split(' ').length )
-            return
         }
 
         message = message.replace(/\n/gm,' ')
