@@ -516,11 +516,26 @@ function message(msg,mmsg){
 
     let message = msg.content.toLowerCase();
     let support_channel = guild.channels.cache.find(c=>c.name=="канал-поддержки")
-    if (!support_channel) return
+    if (!support_channel) send(admin, "rip канал-поддержки")
 
     if (msg.channel.name === 'фио-и-группа') {
         
         let groups = []
+
+        if (message.indexOf("преподаватель") != -1 || message.replace(/ё/g,'е').indexOf("стажер") != -1 || message.indexOf("менеджер") != -1){
+            msg.member.createDM().then( (dm) => { 
+                dm.send('',{
+                embed: {
+                    color: 16711680,
+                    description: "Чтобы получить доступ к роли Преподавателя или Менеджера\
+                                пришли мне ответным сообщением **Имя Фамилию и Ключ**\n\
+                                **Ключ** можно найти по этой ссылке: https://www.notion.so/discord-347567d82dae475fa63a7967de571c7f\n\
+                                **Пример:** *Оксана Родзянко 4-:#+fq@.)sPz{t*",
+                }
+            }) })
+            msg.delete()
+            return
+        }
 
         if(message.search(/[а-яА-Я][.][0-9а-яА-Я-()]*/gm) != -1){
             let g = message.match(/[а-яА-Я][.][0-9а-яА-Я-()]*/gm)
@@ -560,21 +575,6 @@ function message(msg,mmsg){
         if (msg.member.roles.cache.find(role => role.name == "Преподаватель" || role.name == "Менеджер")){
             togleRole(msg, groups, message.split(' ').length )
             return
-        }
-
-        if (message.indexOf("преподаватель") != -1 || message.replace(/ё/g,'е').indexOf("стажер") != -1 || message.indexOf("менеджер") != -1){
-                msg.member.createDM().then( (dm) => { 
-                    dm.send('',{
-                    embed: {
-                        color: 16711680,
-                        description: "Чтобы получить доступ к роли Преподавателя или Менеджера\
-                                    пришли мне ответным сообщением **Имя Фамилию и Ключ**\n\
-                                    **Ключ** можно найти по этой ссылке: https://www.notion.so/discord-347567d82dae475fa63a7967de571c7f\n\
-                                    **Пример:** *Оксана Родзянко 4-:#+fq@.)sPz{t*",
-                    }
-                }) })
-                msg.delete()
-                return
         }
 
         message = message.replace(/\n/gm,' ')
