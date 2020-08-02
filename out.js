@@ -1,4 +1,5 @@
 
+
 function send(who, message){
     for(var i=0;i<who.length;i++){
         bot.chat.postMessage({channel:who[i],text:message})

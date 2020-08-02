@@ -3,6 +3,10 @@ const dragon = require('./dragon.js');
 global.client = new Discord.Client();
 let hr = new Date().getHours();
 
+const token = process.env.token
+let Slack = require('slack')
+global.bot = new Slack({token})
+
 global.server_id = process.env.server_id
 global.miss_participants = process.env.miss_participants.split(' ');
 global.miss_teachers = process.env.miss_teachers.split(' ');
@@ -35,5 +39,5 @@ client.on('ready', () => {
 client.on('message', message )
 client.on('messageUpdate', message )
 
-client.login(process.env.discord);
+client.login('NzA1MzUxNjc5MjIyMDg3NzA0.XqqeUQ.7q2nm5sKDpCkI3g0rwsv6CgUElM');
 
