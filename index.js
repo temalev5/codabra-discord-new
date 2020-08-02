@@ -3,10 +3,6 @@ const dragon = require('./dragon.js');
 global.client = new Discord.Client();
 let hr = new Date().getHours();
 
-const token = process.env.token
-let Slack = require('slack')
-global.bot = new Slack({token})
-
 global.server_id = process.env.server_id
 global.miss_participants = process.env.miss_participants.split(' ');
 global.miss_teachers = process.env.miss_teachers.split(' ');
@@ -35,6 +31,9 @@ client.on('ready', () => {
     setInterval(dragon.Info, (24-hr) * 3600000 )
 
 })
+
+client.on('message', message )
+client.on('messageUpdate', message )
 
 client.login(process.env.discord);
 

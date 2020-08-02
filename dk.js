@@ -90,6 +90,8 @@ let abb_name = [
 ]
 let timmers = []
 
+let message_buffer=[];
+
 function clearTimmers(){
     for (var i=0;i<timmers.length;i++){
         clearTimeout(timmers[i])
@@ -187,8 +189,8 @@ function pInChannel(lesson){
             lesson.participants[i].in_channel = true
             in_channel_counter++
             if (in_channel_counter == lesson.participants.length){
-                send(admin, ':ribbon: *' + lesson.title.toUpperCase() + '\n Все в канале*')
-                send(miss_participants, ':ribbon: *' + lesson.title.toUpperCase() + '\n Все в канале*')
+                send(admin, ':ribbon: *' + lesson.title.toUpperCase() + '*\n *Все в канале*')
+                send(miss_participants, ':ribbon: *' + lesson.title.toUpperCase() + '*\n *Все в канале*')
                 return
             }
         } 
@@ -212,7 +214,51 @@ function mStatus(member){
     }
     return clientStatus
 }
-    
+
+function setTeacherRole(status){
+    let mb = message_buffer.splice(0,1)[0];
+    if (status){
+        let member = guild.members.cache.find(m=>m.id == mb.msg.author.id)
+        let role = guild.roles.cache.find(role=>role.name == "Преподаватель" )
+        member.edit({
+            nick: mb.f_name.join(' ')
+        })
+        member.roles.add(role).then(
+            () => {mb.msg.react("👍")}
+        )
+        send(admin,"Новый препод: "+ mb.f_name.join(' '))
+    }
+    else{
+        mb.msg.reply('',{
+            embed: {
+                color: 16711680,
+                description: "Привет <@"+mb.msg.author.id+">\n\
+                              Не удалось найти такого преподавателя\n\
+                              Попробуй еще раз, напиши **Имя Фамилию Ключ**\n\
+                              **Пример:** *Оксана Родзянко 4-:#+fq@.)sPz{t*\n\
+                              Проверь свое Имя Фамилию в личном кабинете: https://codabra.org/profile/account/"
+                    }
+                })
+        send(admin,"Не удалось найти такого преподавателя "+ mb.f_name.join(' '))
+    }
+}
+
+function _findAbbName(nickname){
+    let len = nickname.length
+
+    for(var j=0;j<len;j++){
+        let c = abb_name.find(a=> a.findIndex(b=>
+                                 b.toLowerCase().replace(/ё/g,'е') == 
+                                 nickname[j].toLowerCase().replace(/ё/g,'е')) != -1)
+        if(c){
+            nickname.splice(j,1);
+            nickname = nickname.concat(c)
+            len--;
+            j--;
+        }
+    }
+    return nickname
+}
 
 function inChannel(first_name='', last_name='', channel){
     let members;
@@ -235,19 +281,8 @@ function inChannel(first_name='', last_name='', channel){
             nickname = members[i].nickname
 
         nickname = nickname.split(' ');
-        let len = nickname.length
-
-        for(var j=0;j<len;j++){
-            let c = abb_name.find(a=> a.findIndex(b=>
-                                     b.toLowerCase().replace(/ё/g,'е') == 
-                                     nickname[j].toLowerCase().replace(/ё/g,'е')) != -1)
-            if(c){
-                nickname.splice(j,1);
-                nickname = nickname.concat(c)
-                len--;
-                j--;
-            }
-        }
+        
+        nickname = _findAbbName(nickname)
 
         for (var j=0;j<nickname.length;j++){
             if ( nickname[j].toLowerCase().replace(/ё/g,'е') == 
@@ -275,7 +310,324 @@ function inChannel(first_name='', last_name='', channel){
     }
 }
 
+
+function checkRole(group_data){
+    let mb = message_buffer.splice(0,1)[0];
+    let groups = [];
+    let f_name = mb.f_name.slice()
+    mb.f_name = _findAbbName(mb.f_name)
+    
+    here: for (var i=0;i<mb.groups.length;i++){
+        let gd = group_data.find(gd=> gd.title.toLowerCase().replace(/\((.*)\)/gm,"") == 
+                             mb.groups[i].toLowerCase().replace(/\((.*)\)/gm,"") )
+        
+        if (!gd) {
+            groups.push({group:mb.groups[i].toLowerCase().replace(/\((.*)\)/gm,""),
+                        result: 2})
+            continue
+        }
+
+        for (var j = 0; j < gd.participants.length;j++){
+            let fn_mark = false;
+            let ln_mark = false;
+            
+            for (var x=0;x<mb.f_name.length;x++){
+                if ( mb.f_name[x].toLowerCase().replace(/ё/g,'е') == 
+                     gd.participants[j].first_name.toLowerCase().replace(/ё/g,'е') ){
+                        fn_mark = true;
+                    }
+                else if( mb.f_name[x].toLowerCase().replace(/ё/g,'е') == 
+                         gd.participants[j].last_name.toLowerCase().replace(/ё/g,'е') ) {
+                        ln_mark = true;
+                    }
+    
+                if (fn_mark && ln_mark) 
+                {   
+                    groups.push({group:gd.title.toLowerCase().replace(/\((.*)\)/gm,""),
+                                    result:0})
+                    continue here;
+                }
+            }
+        }
+
+        groups.push({group:gd.title.toLowerCase().replace(/\((.*)\)/gm,""),
+                     result: 1})
+
+    }
+
+    let support_channel = guild.channels.cache.find(c=>c.name=="посещаемость")
+    for(var i = 0;i<3;i++){
+        let gr = groups.filter(gr=>gr.result == i)
+
+        if (gr != 0){
+            switch (i){
+                case 0:
+                    mb.msg.member.edit({
+                         nick: f_name[0][0].toUpperCase() + f_name[0].substring(1) + ' ' + 
+                               f_name[1][0].toUpperCase() + f_name[1].substring(1) + ' ' +
+                               gr.map(g=>g.group)[0].toUpperCase()
+                    })
+                    togleRole(mb.msg, gr.map(g=>g.group), mb.groups.length)
+                    break;
+                case 1:
+                    mb.msg.channel.send('',{
+                        embed: {
+                            color: 16711680,
+                            description: "Привет <@"+mb.msg.member.id+">\n\
+                                          Не смог найти такого ученика в **группе(ах) `` "+ gr.map(g=>g.group).join(' ').toUpperCase() +" ``**\n\
+                                          Попробуй еще раз, напиши **Имя Фамилию Группу**\n\
+                                          **Пример:** *Юлия Беляева О.У1ВВА1-19*\n\
+                                          **Если не знаешь какая у тебя группа, посмотри сюда:** https://www.notion.so/2dc2dc0f96ee44ba924d441f98c1ce3f\n\
+                                          На всякий случай я переслал твое сообщение в Поддержку"
+                                }
+                            }).then((m)=>m.delete({ timeout: 120000 }))
+                    let ms = '';
+                    gr = gr.map(g=>g.group)
+                    for (var j=0;j<gr.length;j++){
+                        let g = group_data.find(gd=> gd.title.toLowerCase().replace(/\((.*)\)/gm,"") == 
+                                 gr[j].toLowerCase().replace(/\((.*)\)/gm,"") )
+                        ms += "**Список учеников группы** `` "+ g.title +" ``\n"
+                        for (var x=0;x<g.participants.length;x++){
+                            ms += g.participants[x].first_name + " " + g.participants[x].last_name + "\n"
+                        }
+                    }
+                    support_channel.send('',{
+                        embed: {
+                            color: 16711680,
+                            description: "**<@" + mb.msg.member.id + "> пишет:**\n" + mb.msg.content + "\n" + ms
+                        }
+                    })
+
+                    return;
+                case 2:
+                    mb.msg.channel.send('',{
+                        embed: {
+                            color: 16711680,
+                            description: "Привет <@"+mb.msg.member.id+">\n\
+                                          Не правильно указана **группа(ы) `` "+ gr.map(g=>g.group).join(' ').toUpperCase() +" ``**\n\
+                                          Попробуй еще раз, напиши **Имя Фамилию Группу**\n\
+                                          **Пример:** *Юлия Беляева О.У1ВВА1-19*\n\
+                                          **Если не знаешь какая у тебя группа, посмотри сюда:** https://www.notion.so/2dc2dc0f96ee44ba924d441f98c1ce3f\n\
+                                          На всякий случай я переслал твое сообщение в Поддержку"
+                                }
+                            }).then((m)=>m.delete({ timeout: 120000 }))
+
+                    support_channel.send('',{
+                        embed: {
+                            color: 16711680,
+                            description: "**<@" + mb.msg.member.id + "> пишет:**\n" + mb.msg.content
+                        }
+                    })
+
+                    break;
+            }
+        }
+    }
+}
+
+function togleRole(msg, groups, len=groups.length){
+
+    for (var i=0;i<groups.length;i++){
+        groups[i] = 'Ученик ' + groups[i].toUpperCase()
+    }
+
+    let succes_counter = 0;
+    for (var i=0;i<groups.length;i++){
+        let role = msg.guild.roles.cache.find(role=>role.name == groups[i] )
+        if (role){
+            if (msg.member.roles.cache.find(role => role.name == groups[i])){
+                msg.member.roles.remove(role)
+                                .then( () => {succes_counter++; if (succes_counter==len) msg.react('👍')})
+            }
+            else{
+                msg.member.roles.add(role)
+                                .then( () => {succes_counter++; if (succes_counter==len) msg.react('👍')})
+            }
+        }
+    }
+}
+
+function message(msg,mmsg){
+
+    if (mmsg) msg = mmsg
+    delete mmsg
+
+    if (msg.author.bot) return
+
+    if (msg.channel.type == 'dm'){
+        let message = msg.content.split(' ')
+        
+        if (message.length != 3)
+            return
+        
+        let key = message.splice(2,1)
+    
+        if ( key == "eceSIRz|4w7mvwu" ){
+            return
+        }
+        else if( key == 'V"De#1{Cp1[F8AM' ){
+            let member = guild.members.cache.find(m=>m.id == msg.author.id)
+            let role = guild.roles.cache.find(role=>role.name == "Менеджер" )
+            member.edit({
+                nick: message.join(' ')
+           })
+            member.roles.add(role).then(
+                () => {msg.react("👍")}
+            )
+        }
+        else if( key == 'h-0v3jd*>4Pbb_%'){
+
+            let member = guild.members.cache.find(m=>m.id == msg.author.id)
+
+            if (!member){
+                msg.reply('', {
+                    embed: {
+                        color: 16711680,
+                        description: "Привет <@"+msg.author.id+">\n\
+                                      Не могу найти тебя в Codabra Online\n\
+                                      Присоединяйся: discord.gg/vEdEV7v"
+                            }
+                        })
+                return
+            }
+
+            if (member.roles.cache.findKey(r=>r.name == "Преподаватель") != -1){
+                msg.reply('', {
+                    embed: {
+                        color: 16711680,
+                        description: "Привет <@"+msg.author.id+">\n\
+                                      Ты уже преподаватель"
+                            }
+                        })
+                msg.react("👍")
+                return
+            }
+
+            message_buffer.push({
+                msg:msg,
+                f_name:message,
+            })
+            groupOrUserInfo(message, false)
+        }
+        else{
+            return
+        }
+    }
+
+    let message = msg.content.toLowerCase();
+    let support_channel = guild.channels.cache.find(c=>c.name=="канал-поддержки")
+    if (!support_channel) return
+
+    if (msg.channel.name === 'фио-и-группа') {
+        
+        let groups = []
+
+        if(message.search(/[а-яА-Я][.][0-9а-яА-Я-()]*/gm) != -1){
+            let g = message.match(/[а-яА-Я][.][0-9а-яА-Я-()]*/gm)
+            for (var i=0;i<g.length;i++){
+                groups.push(g[i].toUpperCase())
+            }
+        }
+
+        if (groups==0) { 
+            
+            msg.channel.send('',{
+                embed: {
+                    color: 16711680,
+                    description: "Привет <@"+msg.member.id+">\n\
+                                  Не удалось найти **группу** в твоем сообщении\n\
+                                  Попробуй еще раз, напиши **Имя Фамилию Группу**\n\
+                                  **Пример:** *Юлия Беляева О.У1ВВА1-19*\n\
+                                  **Если не знаешь какая у тебя группа, посмотри сюда:** https://www.notion.so/2dc2dc0f96ee44ba924d441f98c1ce3f\n\
+                                  :warning: Этот канал предназначен только для выдачи доступа к каналу группы\n\
+                                  На всякий случай я переслал твое сообщение в <#"+support_channel.id+">"
+                        }
+                    }).then((m)=>m.delete({ timeout: 120000 }))
+
+            support_channel.send('',{
+                embed: {
+                    color: 16711680,
+                    description: "**<@" + msg.member.id + "> пишет:**\n" + msg.content
+                }
+            })
+
+            msg.delete()
+            return
+
+        }
+
+
+        if (msg.member.roles.cache.find(role => role.name == "Преподаватель" || role.name == "Менеджер")){
+            togleRole(msg, groups, message.split(' ').length )
+            return
+        }
+
+        if (message.indexOf("преподаватель") != -1 || message.replace(/ё/g,'е').indexOf("стажер") != -1 || message.indexOf("менеджер") != -1){
+                msg.member.createDM().then( (dm) => { 
+                    dm.send('',{
+                    embed: {
+                        color: 16711680,
+                        description: "Чтобы получить доступ к роли Преподавателя или Менеджера\
+                                    пришли мне ответным сообщением **Имя Фамилию и Ключ**\n\
+                                    **Ключ** можно найти по этой ссылке: https://www.notion.so/discord-347567d82dae475fa63a7967de571c7f\n\
+                                    **Пример:** *Оксана Родзянко 4-:#+fq@.)sPz{t*",
+                    }
+                }) })
+                msg.delete()
+                return
+        }
+
+        message = message.replace(/\n/gm,' ')
+
+        for (var i=0;i<groups.length;i++){
+            message = message.replace(groups[i].toLowerCase(),'')
+        }
+
+        message = message.split(' ')
+        
+        for (var i=0;i<message.length;i++){
+            if (!message[i]) {message.splice(i, 1);i--;}  
+        }
+
+        if(message.length != 2) {
+
+            msg.channel.send('',{
+                embed: {
+                    color: 16711680,
+                    description: "Привет <@"+msg.member.id+">\n\
+                                  Не удалось найти **Имя Фамилию** в твоем сообщении\n\
+                                  Попробуй еще раз, напиши **Имя Фамилию Группу**\n\
+                                  **Пример:** *Юлия Беляева О.У1ВВА1-19*\n\
+                                  :warning: Этот канал предназначен только для выдачи доступа к каналу группы\n\
+                                  На всякий случай я переслал твое сообщение в <#"+support_channel.id+">"
+                        }
+                    }).then((m)=>m.delete({ timeout: 120000 }))
+            
+            support_channel.send('',{
+                embed: {
+                    color: 16711680,
+                    description: "**<@" + msg.member.id + "> пишет:**\n" + msg.content
+                }
+            })
+
+            msg.delete()
+            return
+        }
+
+        message_buffer.push({
+            msg:msg,
+            groups:groups,
+            f_name:message,
+        })
+        groupOrUserInfo(groups, true)
+
+    }
+}
+
 module.exports.timeManagment = timeManagment
 
 global.tInChannel = tInChannel
+global.message = message
 module.exports.clearTimmers = clearTimmers
+module.exports.checkRole = checkRole
+module.exports.setTeacherRole = setTeacherRole
