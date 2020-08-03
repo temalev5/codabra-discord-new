@@ -112,6 +112,8 @@ function onend(){
                 if (!working){
                     dk.checkRole(lesson_data)
                     wg = false;
+                    lesson_data = []
+                    counter = 0;
                     return
                 }
                 working = false;
@@ -179,6 +181,8 @@ function groupOrUserInfo(message, status, key){
             try_counter.splice(idx,1)
     }
 
+    lesson_data = []
+    counter = 0;
     wg = true;
 
     if (status)
