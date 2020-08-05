@@ -161,8 +161,7 @@ function tInChannel(time_slot){
         }
 
         if (!member) {send(admin, 'Не найден преподаватель *' + 
-                                    time_slot.teachers[i].first_name + ' ' + 
-                                    time_slot.teachers[i].last_name + '*'); continue}
+                                    time_slot.teachers[i].title + '*'); continue}
 
         time_slot.teachers[i].status = mStatus(member)
 
