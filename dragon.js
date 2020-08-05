@@ -15,8 +15,14 @@ function onend(){
     if (res.results) {res = res.results}
     
     if (api == 'lesson'){
-        
+
         res = res.filter(ls=>ls.group.title.search(/[[ОМСЕ][.][0-9а-яА-Я\S]*/gm) != -1 )
+
+        if (res.length == 0){
+            working = false;
+            wg = false;
+            return
+        }
 
         for(let i=0;i<res.length;i++){
             let id_group = lesson_data.push({
@@ -48,6 +54,10 @@ function onend(){
         if (id_group == -1){
             id_group = lesson_data.findIndex(less=>less.id == this.req.path.split('/')[4])
             lesson_data.splice(id_group, 1)
+            if (lesson_data.length == 0){
+                working = false;
+                wg = false;
+            }
             return
         }
 
