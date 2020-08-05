@@ -5,7 +5,7 @@ let buffer = []
 let lesson_data = []
 let counter = 0;
 let working = false;
-let try_counter = [];
+let req_query = [];
 let wg = false;
 
 function onend(){
@@ -21,6 +21,12 @@ function onend(){
         if (res.length == 0){
             working = false;
             wg = false;
+
+            if (req_query.length != 0){
+                groupOrUserInfo(req_query[0].message, req_query[0].status)
+                req_query.splice(0, 1)
+            }
+
             return
         }
 
@@ -57,6 +63,10 @@ function onend(){
             if (lesson_data.length == 0){
                 working = false;
                 wg = false;
+                if (req_query.length != 0){
+                    groupOrUserInfo(req_query[0].message, req_query[0].status)
+                    req_query.splice(0, 1)
+                }
             }
             return
         }
@@ -112,6 +122,10 @@ function onend(){
         else{
             dk.setTeacherRole(res.length);
             wg = false;
+            if (req_query.length != 0){
+                groupOrUserInfo(req_query[0].message, req_query[0].status)
+                req_query.splice(0, 1)
+            }
             return;
         }
 
@@ -124,12 +138,20 @@ function onend(){
                     wg = false;
                     lesson_data = []
                     counter = 0;
+                    if (req_query.length != 0){
+                        groupOrUserInfo(req_query[0].message, req_query[0].status)
+                        req_query.splice(0, 1)
+                    }
                     return
                 }
                 working = false;
                 dk.timeManagment(lesson_data)
                 lesson_data = []
                 counter = 0;
+                if (req_query.length != 0){
+                    groupOrUserInfo(req_query[0].message, req_query[0].status)
+                    req_query.splice(0, 1)
+                }
             }
         }
     }
@@ -156,39 +178,17 @@ function response(res){
     res.on('end', onend )
 }
 
-function groupOrUserInfo(message, status, key){
-    if (wg || working) {
+function groupOrUserInfo(message, status){
+    
+    if (wg || working ) {
 
-        if (key){
-            let idx = try_counter.findIndex(tc=>tc.key == key)
-            
-            if (idx != -1){
-                if (try_counter[idx].count++ == 6){
-                    try_counter.splice(idx,1)
-                    return
-                }
-            }
-            else{
-                try_counter.push({
-                    key: Math.random().toString(36).replace(/[^a-z]+/g, '').substr(0, 5),
-                    count: 0
-                })
-            }
-        }
-        else{
-            try_counter.push({
-                key: Math.random().toString(36).replace(/[^a-z]+/g, '').substr(0, 5),
-                count: 0
-            })
-        }
-        setTimeout(groupOrUserInfo,2000,message,status,key)
+        req_query.push({
+            id:Math.round(Math.random()*1000),
+            message:message,
+            status:status
+        })
+
         return
-    }
-
-    if (key){
-        let idx = try_counter.findIndex(tc=>tc.key == key)
-        if (idx != -1)
-            try_counter.splice(idx,1)
     }
 
     lesson_data = []

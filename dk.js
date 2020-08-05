@@ -111,7 +111,6 @@ function setTimmer(minutes, data, func){
     }
 }
 
-
 function timeManagment(lesson_data){
     setTimmer(+10, lesson_data, pInChannel)
 
@@ -623,7 +622,6 @@ function message(msg,mmsg){
 }
 
 module.exports.timeManagment = timeManagment
-
 global.tInChannel = tInChannel
 global.message = message
 module.exports.clearTimmers = clearTimmers
