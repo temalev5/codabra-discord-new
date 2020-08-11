@@ -128,6 +128,7 @@ function timeManagment(lesson_data){
         time_slots[idx].teachers.push({
             group: lesson_data[i].title,
             start: lesson_data[i].start,
+            end: lesson_data[i].end,
             first_name: lesson_data[i].teacher.first_name,
             last_name:lesson_data[i].teacher.last_name,
         })

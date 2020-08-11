@@ -7,6 +7,7 @@ let counter = 0;
 let working = false;
 let req_query = [];
 let wg = false;
+let today;
 
 function onend(){
     let api = this.req.path.split('/')[3]
@@ -74,6 +75,18 @@ function onend(){
         if (res.participants.length<=0){
             lesson_data.splice(id_group, 1)
             return
+        }
+
+        if (res.presentation_lesson){
+            let end = new Date(res.presentation_lesson)
+            if ( end.getFullYear() == today.getFullYear() && 
+                 end.getMonth() == today.getMonth() && 
+                 end.getDate() == today.getDate()){
+                    lesson_data[id_group].end = true
+            }
+            else {
+                lesson_data[id_group].end = false
+            }
         }
 
         for (var i=0;i<res.participants.length;i++){
@@ -216,7 +229,7 @@ function Info(){
     dk.clearTimmers()
 
     // get current date in dragon format
-    let today = new Date();
+    today = new Date();
     let datetime_today_range = today.getFullYear() + '-' 
                             + (today.getMonth()+1) + '-'
                             + (today.getDate()) + ',' 

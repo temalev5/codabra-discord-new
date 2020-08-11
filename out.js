@@ -16,6 +16,7 @@ function messageAboutMissTeachers(time_slot){
         if (!time_slot.teachers[i].status) continue
 
         message += time_slot.teachers[i].start ? ':star2: ' : '';
+        message += time_slot.teachers[i].end ? ':checkered_flag: ' : '';
         message += time_slot.teachers[i].group + ' ';
         message += ':' + time_slot.teachers[i].status.status + ': ';
         message += time_slot.teachers[i].status.version ?
@@ -32,7 +33,8 @@ function messageAboutMissTeachers(time_slot){
 }
 
 function messageAboutMissParticipants(lesson){
-    let message = lesson.start ? ':star2: ' : ''; 
+    let message = lesson.start ? ':star2: ' : '';
+    message += lesson.end ? ':checkered_flag: ' :''; 
     message += '*' + lesson.title.toUpperCase() + '*\n';
     for(var i=0;i<lesson.participants.length;i++){
         if(!lesson.participants[i].in_channel){
