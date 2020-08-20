@@ -216,6 +216,9 @@ function mStatus(member){
 
 function setTeacherRole(status){
     let mb = message_buffer.splice(0,1)[0];
+
+    if (!mb) return
+
     if (status){
         let member = guild.members.cache.find(m=>m.id == mb.msg.author.id)
         let role = guild.roles.cache.find(role=>role.name == "Преподаватель" )
