@@ -388,7 +388,8 @@ function checkRole(group_data){
                     for (var j=0;j<gr.length;j++){
                         let g = group_data.find(gd=> gd.title.toLowerCase().replace(/\((.*)\)/gm,"") == 
                                  gr[j].toLowerCase().replace(/\((.*)\)/gm,"") )
-                        ms += "**Список учеников группы** `` "+ g.title +" ``\n"
+                        ms += "Не смог найти такого ученика в **группе(ах) `` "+ gr.map(g=>g.group).join(' ').toUpperCase() +" ``**\n\
+                               **Список учеников группы** `` "+ g.title +" ``\n"
                         for (var x=0;x<g.participants.length;x++){
                             ms += g.participants[x].first_name + " " + g.participants[x].last_name + "\n"
                         }
@@ -417,7 +418,8 @@ function checkRole(group_data){
                     support_channel.send('',{
                         embed: {
                             color: 16711680,
-                            description: "**<@" + mb.msg.member.id + "> пишет:**\n" + mb.msg.content
+                            description: "Не правильно указана **группа(ы) `` "+ gr.map(g=>g.group).join(' ').toUpperCase() +" ``**\n\
+                                          **<@" + mb.msg.member.id + "> пишет:**\n" + mb.msg.content
                         }
                     })
 
@@ -569,7 +571,8 @@ function message(msg,mmsg){
             support_channel.send('',{
                 embed: {
                     color: 16711680,
-                    description: "**<@" + msg.member.id + "> пишет:**\n" + msg.content
+                    description: "Не удалось найти **группу** в сообщении\n\
+                                  **<@" + msg.member.id + "> пишет:**\n" + msg.content
                 }
             })
 
@@ -607,7 +610,8 @@ function message(msg,mmsg){
             support_channel.send('',{
                 embed: {
                     color: 16711680,
-                    description: "**<@" + msg.member.id + "> пишет:**\n" + msg.content
+                    description: "Не удалось найти **Имя Фамилию** в сообщении\n\
+                                  **<@" + msg.member.id + "> пишет:**\n" + msg.content
                 }
             })
 

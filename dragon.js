@@ -113,6 +113,7 @@ function onend(){
     }
     else if( api == 'users' ){
         let id_lesson;
+
         if(res.role==1){
             id_lesson = lesson_data.findIndex( less=> less.participants.findIndex(part=> part.id == res.id) != -1)
             
@@ -227,6 +228,7 @@ function Info(){
     working = true;
 
     dk.clearTimmers()
+    // dk.deleteOldGroup()
 
     // get current date in dragon format
     today = new Date();
