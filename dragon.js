@@ -17,7 +17,7 @@ function onend(){
     
     if (api == 'lesson'){
 
-        res = res.filter(ls=>ls.group.title.search(/[[ОМСЕ][.][0-9а-яА-Я\S]*/gm) != -1 )
+        res = res.filter(ls=>ls.group.title.search(/[а-яА-Я][.][0-9а-яА-Я]*[.]?[0-9а-яА-Я]*[-][0-9]+[0-9-()]*/gm) != -1 )
 
         if (res.length == 0){
             working = false;
