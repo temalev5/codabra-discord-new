@@ -9,15 +9,35 @@ let req_query = [];
 let wg = false;
 let today;
 
-function onend(){
-    let api = this.req.path.split('/')[3]
-    let res = buffer.findIndex(b=>b.path == this.req.path)
+function _queryInfo(req){
+    let res = buffer.findIndex(b=>b.path == req.path)
     res = JSON.parse( buffer.splice(res,1)[0].buff )
     if (res.results) {res = res.results}
+
+    return res
+}
+
+
+function onendgroup(){
+    let titles = [];
+    let res = _queryInfo(this.req)
+    for (var i=0;i<res.length;i++){
+        titles.push(res[i].title)
+    }
+    
+    if (titles){
+        dk.deleteGroups(titles)
+    }
+
+}
+
+function onend(){
+    let api = this.req.path.split('/')[3]
+    let res = _queryInfo(this.req)
     
     if (api == 'lesson'){
 
-        res = res.filter(ls=>ls.group.title.search(/[а-яА-Я][.][0-9а-яА-Я]*[.]?[0-9а-яА-Я]*[-][0-9]+[0-9-()]*/gm) != -1 )
+        res = res.filter(ls=>ls.group.title.search(/[а-яА-Я][.][0-9а-яА-Я]*[.]?[0-9а-яА-Я]*[-][0-9]+[\s0-9-()]*/gm) != -1 )
 
         if (res.length == 0){
             working = false;
@@ -187,7 +207,7 @@ function ondata(body){
 }
 
 
-function response(res){
+function response(res,a){
     res.on('data', ondata )
     res.on('end', onend )
 }
@@ -232,6 +252,7 @@ function Info(){
 
     // get current date in dragon format
     today = new Date();
+    
     let datetime_today_range = today.getFullYear() + '-' 
                             + (today.getMonth()+1) + '-'
                             + (today.getDate()) + ',' 
@@ -244,6 +265,19 @@ function Info(){
                 datetime_today_range+"&limit=999",
                 options, response)
 
+    today.setDate(today.getDate()-30)
+    datetime_today_range = today.getFullYear() + '-' 
+                             + (today.getMonth()+1) + '-'
+                             + (today.getDate()) + ',' 
+                             + today.getFullYear() + '-' 
+                             + (today.getMonth()+1) + '-' 
+                             + (today.getDate()) ;
+    
+    // Удаление старых групп
+
+    // https.get("https://dragonapi.codabra.org/api/v1/group/?presentation_lesson=" +
+    //             datetime_today_range+"&limit=999",
+    //             options, (res)=>{    res.on('data', ondata ); res.on('end', onendgroup ) })
 }
 
 global.groupOrUserInfo = groupOrUserInfo

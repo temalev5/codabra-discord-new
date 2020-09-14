@@ -92,6 +92,22 @@ let timmers = []
 
 let message_buffer=[];
 
+function deleteGroups(groups){
+    guild = client.guilds.cache.find(guild=>guild.id==705350096656793671);
+    groups.push("О.У1П8-19(8-12лет)")
+    for (var i=0; i<groups.length;i++){
+        let channel = guild.channels.cache.find( ch => ch.name == groups[i].toLowerCase().replace(".","").replace(/\s?\((.*)\)/gm,"") )
+        if (channel)
+            channel.delete()
+        channel = guild.channels.cache.find( ch => ch.name == groups[i].toUpperCase().replace(/\s?\((.*)\)/gm,"") )
+        if (channel)
+            channel.delete()
+        let role = guild.roles.cache.find( r => r.name == "Ученик " +  groups[i].toUpperCase().replace(/\s?\((.*)\)/gm,"") )
+        if (role)
+            role.delete()
+    }
+}
+
 function clearTimmers(){
     for (var i=0;i<timmers.length;i++){
         clearTimeout(timmers[i])
@@ -143,8 +159,8 @@ function tInChannel(time_slot){
     for(var i=0;i<time_slot.teachers.length;i++){
         let channel = guild.channels.cache.find(channel => 
             channel.type =='voice' && 
-            time_slot.teachers[i].group.toLowerCase().replace(/\((.*)\)/gm,"") == 
-            channel.name.toLowerCase().replace(/\((.*)\)/gm,"") )
+            time_slot.teachers[i].group.toLowerCase().replace(/\s?\((.*)\)/gm,"") == 
+            channel.name.toLowerCase().replace(/\s?\((.*)\)/gm,"") )
 
         let member;
 
@@ -176,8 +192,8 @@ function pInChannel(lesson){
     let in_channel_counter = 0;
     let channel = guild.channels.cache.find(channel => 
                     channel.type =='voice' && 
-                    lesson.title.toLowerCase().replace(/\((.*)\)/gm,"") == 
-                    channel.name.toLowerCase().replace(/\((.*)\)/gm,"") )
+                    lesson.title.toLowerCase().replace(/\s?\((.*)\)/gm,"") == 
+                    channel.name.toLowerCase().replace(/\s?\((.*)\)/gm,"") )
     
     if (!channel) return
 
@@ -320,11 +336,11 @@ function checkRole(group_data){
     mb.f_name = _findAbbName(mb.f_name)
     
     here: for (var i=0;i<mb.groups.length;i++){
-        let gd = group_data.find(gd=> gd.title.toLowerCase().replace(/\((.*)\)/gm,"") == 
-                             mb.groups[i].toLowerCase().replace(/\((.*)\)/gm,"") )
+        let gd = group_data.find(gd=> gd.title.toLowerCase().replace(/\s?\((.*)\)/gm,"") == 
+                             mb.groups[i].toLowerCase().replace(/\s?\((.*)\)/gm,"") )
         
         if (!gd) {
-            groups.push({group:mb.groups[i].toLowerCase().replace(/\((.*)\)/gm,""),
+            groups.push({group:mb.groups[i].toLowerCase().replace(/\s?\((.*)\)/gm,""),
                         result: 2})
             continue
         }
@@ -345,14 +361,14 @@ function checkRole(group_data){
     
                 if (fn_mark && ln_mark) 
                 {   
-                    groups.push({group:gd.title.toLowerCase().replace(/\((.*)\)/gm,""),
+                    groups.push({group:gd.title.toLowerCase().replace(/\s?\((.*)\)/gm,""),
                                     result:0})
                     continue here;
                 }
             }
         }
 
-        groups.push({group:gd.title.toLowerCase().replace(/\((.*)\)/gm,""),
+        groups.push({group:gd.title.toLowerCase().replace(/\s?\((.*)\)/gm,""),
                      result: 1})
 
     }
@@ -386,8 +402,8 @@ function checkRole(group_data){
                     let ms = '';
                     gr = gr.map(g=>g.group)
                     for (var j=0;j<gr.length;j++){
-                        let g = group_data.find(gd=> gd.title.toLowerCase().replace(/\((.*)\)/gm,"") == 
-                                 gr[j].toLowerCase().replace(/\((.*)\)/gm,"") )
+                        let g = group_data.find(gd=> gd.title.toLowerCase().replace(/\s?\((.*)\)/gm,"") == 
+                                 gr[j].toLowerCase().replace(/\s?\((.*)\)/gm,"") )
                         ms += "Не смог найти такого ученика в **группе(ах) `` "+ gr.map(g=>g.group).join(' ').toUpperCase() +" ``**\n\
                                **Список учеников группы** `` "+ g.title +" ``\n"
                         for (var x=0;x<g.participants.length;x++){
@@ -526,8 +542,8 @@ function message(msg,mmsg){
         
         let groups = []
 
-        if(message.search(/[а-яА-Я][.][0-9а-яА-Я]*[.]?[0-9а-яА-Я]*[-][0-9]+[0-9-()]*/gm) != -1){
-            let g = message.match(/[а-яА-Я][.][0-9а-яА-Я]*[.]?[0-9а-яА-Я]*[-][0-9]+[0-9-()]*/gm)
+        if(message.search(/[а-яА-Я][.][0-9а-яА-Я]*[.]?[0-9а-яА-Я]*[-][0-9]+[\s0-9-()]*/gm) != -1){
+            let g = message.match(/[а-яА-Я][.][0-9а-яА-Я]*[.]?[0-9а-яА-Я]*[-][0-9]+[\s0-9-()]*/gm)
             for (var i=0;i<g.length;i++){
                 groups.push(g[i].toUpperCase())
             }
@@ -632,6 +648,7 @@ function message(msg,mmsg){
 module.exports.timeManagment = timeManagment
 global.tInChannel = tInChannel
 global.message = message
+module.exports.deleteGroups = deleteGroups
 module.exports.clearTimmers = clearTimmers
 module.exports.checkRole = checkRole
 module.exports.setTeacherRole = setTeacherRole

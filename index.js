@@ -40,3 +40,4 @@ client.on('message', message )
 client.on('messageUpdate', message )
 
 client.login(process.env.discord);
+
