@@ -93,18 +93,23 @@ let timmers = []
 let message_buffer=[];
 
 function deleteGroups(groups){
-    guild = client.guilds.cache.find(guild=>guild.id==705350096656793671);
-    groups.push("О.У1П8-19(8-12лет)")
     for (var i=0; i<groups.length;i++){
         let channel = guild.channels.cache.find( ch => ch.name == groups[i].toLowerCase().replace(".","").replace(/\s?\((.*)\)/gm,"") )
         if (channel)
             channel.delete()
+                   .then( ()=> { send(admin, "Удален текстовый канал " + channel.name) } )
+                   .catch( (err)=> { send(admin, "Не удалось удалить текстовый канал " + channel.name + " "+ err) });
+                   
         channel = guild.channels.cache.find( ch => ch.name == groups[i].toUpperCase().replace(/\s?\((.*)\)/gm,"") )
         if (channel)
             channel.delete()
+                    .then( ()=> { send(admin, "Удален голосовой канал " + channel.name) } )
+                    .catch( (err)=> { send(admin, "Не удалось удалить голосовой канал " + channel.name) });
         let role = guild.roles.cache.find( r => r.name == "Ученик " +  groups[i].toUpperCase().replace(/\s?\((.*)\)/gm,"") )
         if (role)
             role.delete()
+                .then( ()=> { send(admin, "Удалена роль " + channel.name) })
+                .catch( (err)=> { send(admin, "Не удалось удалить роль " + channel.name) });
     }
 }
 

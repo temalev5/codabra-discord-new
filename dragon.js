@@ -275,9 +275,9 @@ function Info(){
     
     // Удаление старых групп
 
-    // https.get("https://dragonapi.codabra.org/api/v1/group/?presentation_lesson=" +
-    //             datetime_today_range+"&limit=999",
-    //             options, (res)=>{    res.on('data', ondata ); res.on('end', onendgroup ) })
+    https.get("https://dragonapi.codabra.org/api/v1/group/?presentation_lesson=" +
+                datetime_today_range+"&limit=999",
+                options, (res)=>{    res.on('data', ondata ); res.on('end', onendgroup ) })
 }
 
 global.groupOrUserInfo = groupOrUserInfo
