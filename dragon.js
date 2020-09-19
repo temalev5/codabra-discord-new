@@ -9,6 +9,8 @@ let req_query = [];
 let wg = false;
 let today;
 
+let gandu = [];
+
 function _queryInfo(req){
     let res = buffer.findIndex(b=>b.path == req.path)
     res = JSON.parse( buffer.splice(res,1)[0].buff )
@@ -207,9 +209,69 @@ function ondata(body){
 }
 
 
-function response(res,a){
+function response(res){
     res.on('data', ondata )
     res.on('end', onend )
+}
+
+let userinfo = function(key){
+    return function(){
+        let res = _queryInfo(this.req)
+        let id = gandu.findIndex(g=>g.key == key)
+        
+        gandu[id].participants.push({
+            ft_name:res.first_name,
+            lt_name:res.last_name
+        })
+
+        if ( ++gandu[id].count == gandu[id].len){
+            dk.checkRoleA( gandu.splice( id , 1 )[0]  )
+        }
+    }
+}
+
+let onendGandU = function(key, group){
+    return function(){
+        let res = _queryInfo(this.req)
+        if (res.length == 0) { dk.checkRoleA({key:key, error_code: 1}); return;}
+        res = res[0];
+        
+        if ( group.toLowerCase().replace(/\s?\((.*)\)/gm,"") != 
+                res.title.toLowerCase().replace(/\s?\((.*)\)/gm,"") )
+                return
+        
+        if (res.participants.length == 0)
+                return
+
+        gandu.push({
+            key:key,
+            group:res.title,
+            participants:[],
+            count:0,
+            len:res.participants.length,
+        })
+        
+        for (var i=0;i<res.participants.length;i++){
+            https.get("https://dragonapi.codabra.org/api/v1/users/" +
+                    res.participants[i] + "/", options, (res)=>{
+                    res.on('data', ondata);
+                    res.on('end', userinfo(key) );
+                })
+        }
+
+        console.log(key)
+    }
+}
+
+function groupAndUserInfo( key, group ){
+
+    https.get("https://dragonapi.codabra.org/api/v1/group/?title="
+                + group.toUpperCase(), options, (res)=>{
+                    res.on('data', ondata);
+                    res.on('end', onendGandU(key, group ) );
+                })
+    
+    let a = 10;
 }
 
 function groupOrUserInfo(message, status){
@@ -280,5 +342,6 @@ function Info(){
                 options, (res)=>{    res.on('data', ondata ); res.on('end', onendgroup ) })
 }
 
+global.groupAndUserInfo = groupAndUserInfo
 global.groupOrUserInfo = groupOrUserInfo
 module.exports.Info = Info

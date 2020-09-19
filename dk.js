@@ -88,9 +88,204 @@ let abb_name = [
 
     ['Юра','Юрий']
 ]
+
 let timmers = []
 
 let message_buffer=[];
+
+
+function checkRoleA(gd){
+
+    let support_channel = guild.channels.cache.find(c=>c.name=="посещаемость")
+
+    let id = message_buffer.findIndex(mb=>mb.key == gd.key)
+    let mb = message_buffer.splice(id, 1)[0]
+    
+    if (gd.error_code){
+        mb.msg.channel.send('',{
+            embed: {
+                color: 16711680,
+                description: "Привет <@"+mb.msg.member.id+">\n\
+                              Не удалось найти **группу `` "+ mb.group.toUpperCase() +" ``**\n\
+                              Попробуй еще раз, напиши **Имя Фамилию Группу**\n\
+                              **Пример:** *Юлия Беляева О.У1ВВА1-19*\n\
+                              **Если не знаешь какая у тебя группа, посмотри сюда:** https://www.notion.so/2dc2dc0f96ee44ba924d441f98c1ce3f\n\
+                              На всякий случай я переслал твое сообщение в Поддержку"
+                    }
+                }).then((m)=>m.delete({ timeout: 120000 }))
+
+        support_channel.send('',{
+            embed: {
+                color: 16711680,
+                description: "Не удалось найти **группу `` "+ mb.group.toUpperCase() +" ``**\n\
+                              **<@" + mb.msg.member.id + "> пишет:**\n" + mb.msg.content
+            }
+        })
+        return
+    }
+
+    let group;
+    let f_name = mb.f_name.slice()
+    mb.f_name = _findAbbName(mb.f_name)
+    
+    here: for (var j = 0; j < gd.participants.length;j++){
+        let fn_mark = false;
+        let ln_mark = false;
+            
+        for (var x=0;x<mb.f_name.length;x++){
+            if ( mb.f_name[x].toLowerCase().replace(/ё/g,'е') == 
+                    gd.participants[j].ft_name.toLowerCase().replace(/ё/g,'е') ){
+                    fn_mark = true;
+                }
+            else if( mb.f_name[x].toLowerCase().replace(/ё/g,'е') == 
+                        gd.participants[j].lt_name.toLowerCase().replace(/ё/g,'е') ) {
+                        ln_mark = true;
+                    }
+    
+            if (fn_mark && ln_mark) 
+            {   
+                group = gd.group.toLowerCase().replace(/\s?\((.*)\)/gm,"")
+                break here;
+            }
+        }
+    }
+
+    if (!group){
+        mb.msg.channel.send('',{
+            embed: {
+                color: 16711680,
+                description: "Привет <@"+mb.msg.member.id+">\n\
+                              Не смог найти такого ученика в **группе `` "+ gd.group.toUpperCase() +" ``**\n\
+                              Попробуй еще раз, напиши **Имя Фамилию Группу**\n\
+                              **Пример:** *Юлия Беляева О.У1ВВА1-19*\n\
+                              **Если не знаешь какая у тебя группа, посмотри сюда:** https://www.notion.so/2dc2dc0f96ee44ba924d441f98c1ce3f\n\
+                              На всякий случай я переслал твое сообщение в Поддержку"
+                    }
+                }).then((m)=>m.delete({ timeout: 120000 }))
+        let ms = '';
+        ms += "**Список учеников группы** `` "+ gd.group.toUpperCase() +" ``\n"
+        for (var i=0;i<gd.participants.length;i++){
+            ms += gd.participants[i].ft_name + " " + gd.participants[x].lt_name + "\n"
+        }
+        support_channel.send('',{
+            embed: {
+                color: 16711680,
+                description: "Не смог найти такого ученика в **группе `` "+ gd.group.toUpperCase() +" ``**\n\
+                              **<@" + mb.msg.member.id + "> пишет:**\n" + mb.msg.content + "\n" + ms
+            }
+        })
+
+        return;
+    }
+    else{
+        mb.msg.member.edit({
+            nick: f_name[0][0].toUpperCase() + f_name[0].substring(1) + ' ' + 
+                  f_name[1][0].toUpperCase() + f_name[1].substring(1) + ' ' +
+                  group.toUpperCase()
+       })
+       togleRole(mb.msg, group, true)
+    }
+}
+
+function _getGroupInfo(group){
+
+    let channels = {
+        "ИЗ":{
+            color:0,
+            category:708650112670498909,
+        },
+        "РБ":{
+            color: 2864101,
+            category:708649828040572969,
+        },
+        "М":{
+            color:8043081,
+            category:708649648629350431,
+        },
+        "К":{
+            color:8043081,
+            category:756822329174130698,
+        },
+        "КБ":{
+            color:333675,
+            category:708649821975740416,
+        },
+        "C":{
+            color:16232999,
+            category:694888469364736040,
+        },
+        "Ю":{
+            color:8684684,
+            category:708649086919901214,
+        },
+        "3Д":{
+            color:15496196,
+            category:708649482396631050,
+        },
+        "Н":{
+            color:12757146,
+            category:705887039320752201, 
+        },
+        "П":{
+            color:16768064,
+            category:688049880156995590, 
+        },
+        "В":{
+            color:2588588,
+            category:708649095987986442, 
+        },
+        "Р":{
+            color:14965844,
+            category:687986411273715742, 
+        }
+    }
+
+    for (var key in channels){
+        if ( group.toUpperCase().indexOf( key ) != -1 )
+            return channels[key];
+    }
+    return 0; 
+}
+
+function createGroup(group, msg, group, user){
+
+    gInfo = _getGroupInfo(group)
+
+    guild = client.guilds.cache.find(guild=>guild.id==705350096656793671);
+    guild.roles.create({
+        data:{
+            name: "Ученик " + group.toUpperCase(),
+            color: gInfo.color,
+            hoist: true,
+            permissions:[],
+            mentionable: false
+        }
+    }).then( (role)=>{
+        guild.channels.create(group.toUpperCase(),{
+            type:"voice",
+            nsfw:false,
+            parent: guild.channels.cache.find(ch => ch.id == gInfo.category),
+            permissionOverwrites: [{
+                id: role.id,
+                allow:["VIEW_CHANNEL"],
+            }],
+    
+        });
+
+        guild.channels.create(group.toLowerCase().replace(".","").replace(/\s?\((.*)\)/gm,""), {
+            type:"text",
+            nsfw:false,
+            parent: guild.channels.cache.find(ch => ch.id == gInfo.category),
+            permissionOverwrites: [{
+                id: role.id,
+                allow:["VIEW_CHANNEL"],
+            }],
+    
+        })
+
+        _setRole(role, msg, group, user)
+    })
+}
 
 function deleteGroups(groups){
     for (var i=0; i<groups.length;i++){
@@ -333,7 +528,6 @@ function inChannel(first_name='', last_name='', channel){
     }
 }
 
-
 function checkRole(group_data){
     let mb = message_buffer.splice(0,1)[0];
     let groups = [];
@@ -450,26 +644,27 @@ function checkRole(group_data){
     }
 }
 
-function togleRole(msg, groups, len=groups.length){
+function _setRole(role, msg, group, user){
+    if (msg.member.roles.cache.find(role => role.name == 'Ученик ' + group.toUpperCase() ) && !user){
+        msg.member.roles.remove(role)
+                        .then( () => {msg.react('👍')})
+    }
+    else{
+        msg.member.roles.add(role)
+                        .then( () => {msg.react('👍')})
+    }
+}
 
-    for (var i=0;i<groups.length;i++){
-        groups[i] = 'Ученик ' + groups[i].toUpperCase()
+function togleRole(msg, group, user){
+
+    let role = msg.guild.roles.cache.find(role=>role.name == 'Ученик ' + group.toUpperCase() )
+    if (!role){
+        createGroup(group, msg, group, user);
+        return
     }
 
-    let succes_counter = 0;
-    for (var i=0;i<groups.length;i++){
-        let role = msg.guild.roles.cache.find(role=>role.name == groups[i] )
-        if (role){
-            if (msg.member.roles.cache.find(role => role.name == groups[i])){
-                msg.member.roles.remove(role)
-                                .then( () => {succes_counter++; if (succes_counter==len) msg.react('👍')})
-            }
-            else{
-                msg.member.roles.add(role)
-                                .then( () => {succes_counter++; if (succes_counter==len) msg.react('👍')})
-            }
-        }
-    }
+    _setRole(role, msg, group, user)
+
 }
 
 function message(msg,mmsg){
@@ -544,22 +739,21 @@ function message(msg,mmsg){
     if (!support_channel) send(admin, "rip канал-поддержки")
 
     if (msg.channel.name === 'фио-и-группа') {
-        
-        let groups = []
 
-        if(message.search(/[а-яА-Я][.][0-9а-яА-Я]*[.]?[0-9а-яА-Я]*[-][0-9]+[\s0-9-()]*/gm) != -1){
-            let g = message.match(/[а-яА-Я][.][0-9а-яА-Я]*[.]?[0-9а-яА-Я]*[-][0-9]+[\s0-9-()]*/gm)
-            for (var i=0;i<g.length;i++){
-                groups.push(g[i].toUpperCase())
-            }
+        let group;
+
+        if(message.search(/[а-яА-Я][.][0-9а-яА-Я]*[.]?[0-9а-яА-Я]*[-][0-9]+[\s]?[0-9-()]*/gm) != -1){
+            group = message.match(/[а-яА-Я][.][0-9а-яА-Я]*[.]?[0-9а-яА-Я]*[-][0-9]+[\s]?[0-9-()]*/gm)[0]
+            // for (var i=0;i<g.length;i++){
+            //     groups.push(g[i].toUpperCase())
+            // }
         }
 
-        if (msg.member.roles.cache.find(role => role.name == "Преподаватель" || role.name == "Менеджер")){
-            togleRole(msg, groups, message.split(' ').length )
-            return
-        }
+        if (message.indexOf("преподаватель") != -1 || 
+                message.replace(/ё/g,'е').indexOf("стажер") != -1 || 
+                message.indexOf("менеджер") != -1 && 
+                !msg.member.roles.cache.find(role => role.name == "Преподаватель" || role.name == "Менеджер") ){
 
-        if (message.indexOf("преподаватель") != -1 || message.replace(/ё/g,'е').indexOf("стажер") != -1 || message.indexOf("менеджер") != -1){
             msg.member.createDM().then( (dm) => { 
                 dm.send('',{
                 embed: {
@@ -574,7 +768,7 @@ function message(msg,mmsg){
             return
         }
 
-        if (groups==0) { 
+        if (!group) { 
             
             msg.channel.send('',{
                 embed: {
@@ -602,11 +796,14 @@ function message(msg,mmsg){
 
         }
 
+        if (msg.member.roles.cache.find(role => role.name == "Преподаватель" || role.name == "Менеджер")){
+            togleRole(msg, group, false )
+            return
+        }
+
         message = message.replace(/\n/gm,' ')
 
-        for (var i=0;i<groups.length;i++){
-            message = message.replace(groups[i].toLowerCase(),'')
-        }
+        message = message.replace(group.toLowerCase(),'')
 
         message = message.split(' ')
         
@@ -640,12 +837,18 @@ function message(msg,mmsg){
             return
         }
 
+        let key = Math.random().toString(36).replace(/[^a-z]+/g, '').substr(0, 5);
+
         message_buffer.push({
+            key: key,
             msg:msg,
-            groups:groups,
-            f_name:message,
+            group:group,
+            f_name:message
         })
-        groupOrUserInfo(groups, true)
+
+        groupAndUserInfo(key, group)
+
+        // groupAndUserInfo(groups, true)
 
     }
 }
@@ -656,4 +859,5 @@ global.message = message
 module.exports.deleteGroups = deleteGroups
 module.exports.clearTimmers = clearTimmers
 module.exports.checkRole = checkRole
+module.exports.checkRoleA = checkRoleA
 module.exports.setTeacherRole = setTeacherRole
