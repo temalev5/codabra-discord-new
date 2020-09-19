@@ -283,6 +283,7 @@ function createGroup(group, msg, group, user){
     
         })
 
+        msg.react("🥇")
         _setRole(role, msg, group, user)
     })
 }
