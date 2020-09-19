@@ -659,7 +659,7 @@ function _setRole(role, msg, group, user){
 function togleRole(msg, group, user){
 
     let role = msg.guild.roles.cache.find(role=>role.name == 'Ученик ' + group.toUpperCase() )
-    if (!role){
+    if (!role && user){
         createGroup(group, msg, group, user);
         return
     }
