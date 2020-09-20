@@ -165,7 +165,7 @@ function checkRoleA(gd){
         let ms = '';
         ms += "**Список учеников группы** `` "+ gd.group.toUpperCase() +" ``\n"
         for (var i=0;i<gd.participants.length;i++){
-            ms += gd.participants[i].ft_name + " " + gd.participants[x].lt_name + "\n"
+            ms += gd.participants[i].ft_name + " " + gd.participants[i].lt_name + "\n"
         }
         support_channel.send('',{
             embed: {
