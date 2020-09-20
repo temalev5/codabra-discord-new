@@ -251,7 +251,6 @@ function createGroup(group, msg, group, user){
 
     gInfo = _getGroupInfo(group)
 
-    guild = client.guilds.cache.find(guild=>guild.id==705350096656793671);
     guild.roles.create({
         data:{
             name: "Ученик " + group.toUpperCase(),
