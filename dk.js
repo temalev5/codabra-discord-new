@@ -315,23 +315,10 @@ function clearTimmers(){
     timmers = []
 }
 
-function setTimmer(minutes, data, func){
-    for(var i=0;i<data.length;i++){
-        let current_time = new Date();
-        let less_date = new Date (data[i].time);
-        less_date.setMinutes( less_date.getMinutes() + minutes );
-        if (( less_date - current_time) <= 0 ){
-            continue
-        }
-        timmers.push(setTimeout(func, less_date - current_time, data[i]));
-    }
-}
-
-function timeManagment(lesson_data){
-    setTimmer(+10, lesson_data, pInChannel)
-
+function _groupByTime(lesson_data){
     let time_slots = []
     for (var i=0;i<lesson_data.length;i++){
+
         let idx = time_slots.findIndex(ts=> ts.time == lesson_data[i].time)
         if (idx==-1){
             idx = time_slots.push({
@@ -351,7 +338,28 @@ function timeManagment(lesson_data){
 
     }
 
-    setTimmer(-35, time_slots, tInChannel )
+    return time_slots
+}
+
+function setTimmer(minutes, data, func){
+    for(var i=0;i<data.length;i++){
+        let current_time = new Date();
+        let less_date = new Date (data[i].time);
+        less_date.setMinutes( less_date.getMinutes() + minutes );
+        if (( less_date - current_time) <= 0 ){
+            continue
+        }
+        timmers.push(setTimeout(func, less_date - current_time, data[i]));
+    }
+}
+
+function timeManagment(lesson_data){
+    
+    setTimmer(+10, lesson_data, pInChannel)
+
+    setTimmer(-35, _groupByTime(lesson_data.filter( ld => ld.title.toUpperCase().indexOf("ИЗ") == -1 )) , tInChannel )
+
+    setTimmer(-10, _groupByTime(lesson_data.filter( ld => ld.title.toUpperCase().indexOf("ИЗ") != -1 )), tInChannel )
 }
 
 function tInChannel(time_slot){

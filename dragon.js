@@ -310,11 +310,9 @@ function Info(){
     working = true;
 
     dk.clearTimmers()
-    // dk.deleteOldGroup()
 
     // get current date in dragon format
     today = new Date();
-    
     let datetime_today_range = today.getFullYear() + '-' 
                             + (today.getMonth()+1) + '-'
                             + (today.getDate()) + ',' 
@@ -327,13 +325,15 @@ function Info(){
                 datetime_today_range+"&limit=999",
                 options, response)
 
-    today.setDate(today.getDate()-30)
-    datetime_today_range = today.getFullYear() + '-' 
-                             + (today.getMonth()+1) + '-'
-                             + (today.getDate()) + ',' 
-                             + today.getFullYear() + '-' 
-                             + (today.getMonth()+1) + '-' 
-                             + (today.getDate()) ;
+    let one_mth_ago = new Date(today);
+    one_mth_ago.setDate(today.getDate()-30)
+    
+    datetime_today_range = one_mth_ago.getFullYear() + '-' 
+                             + (one_mth_ago.getMonth()+1) + '-'
+                             + (one_mth_ago.getDate()) + ',' 
+                             + one_mth_ago.getFullYear() + '-' 
+                             + (one_mth_ago.getMonth()+1) + '-' 
+                             + (one_mth_ago.getDate()) ;
     
     // Удаление старых групп
 
