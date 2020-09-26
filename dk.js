@@ -743,8 +743,8 @@ function message(msg,mmsg){
     }
 
     let message = msg.content.toLowerCase();
-    let support_channel = guild.channels.cache.find(c=>c.name=="канал-поддержки")
-    if (!support_channel) send(admin, "rip канал-поддержки")
+    let support_channel = guild.channels.cache.find(c=>c.name=="посещаемость")
+    if (!support_channel) send(admin, "rip посещаемость")
 
     if (msg.channel.name === 'фио-и-группа') {
 
@@ -787,7 +787,7 @@ function message(msg,mmsg){
                                   **Пример:** *Юлия Беляева О.У1ВВА1-19*\n\
                                   **Если не знаешь какая у тебя группа, посмотри сюда:** https://www.notion.so/2dc2dc0f96ee44ba924d441f98c1ce3f\n\
                                   :warning: Этот канал предназначен только для выдачи доступа к каналу группы\n\
-                                  На всякий случай я переслал твое сообщение в <#"+support_channel.id+">"
+                                  На всякий случай я переслал твое сообщение Администратору"
                         }
                     }).then((m)=>m.delete({ timeout: 120000 }))
 
@@ -829,7 +829,7 @@ function message(msg,mmsg){
                                   Попробуй еще раз, напиши **Имя Фамилию Группу**\n\
                                   **Пример:** *Юлия Беляева О.У1ВВА1-19*\n\
                                   :warning: Этот канал предназначен только для выдачи доступа к каналу группы\n\
-                                  На всякий случай я переслал твое сообщение в <#"+support_channel.id+">"
+                                  На всякий случай я переслал твое сообщение Администратору"
                         }
                     }).then((m)=>m.delete({ timeout: 120000 }))
             
