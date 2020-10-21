@@ -39,4 +39,14 @@ client.on('ready', () => {
 client.on('message', message )
 client.on('messageUpdate', message )
 
+// client.on('voiceStateUpdate', (old ,n) => {
+        
+//     console.log('test')
+// })
+
+// client.on('guildMemberSpeaking', (mem, t) => {
+//     client.voice.broadcasts
+//     console.log(t.bitfield)
+// })
+
 client.login(process.env.discord);

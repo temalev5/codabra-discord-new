@@ -1,0 +1,38 @@
+const token = process.env.token
+let Slack = require('slack')
+global.bot = new Slack({token})
+
+global.server_id = process.env.server_id
+global.miss_participants = process.env.miss_participants.split(' ');
+global.miss_teachers = process.env.miss_teachers.split(' ');
+global.admin = process.env.admin.split(' ');
+
+global.options = {
+    protocol: 'https:',
+    headers: {
+        'cookie': 'auth_token='+process.env.cookie+'; path=/; domain=.dragonapi.codabra.org;',
+        'Content-Type':'application/json',
+    }
+}
+
+client.login(process.env.discord);
+
+
+const token = 'xoxb-64132737991-1109136125201-gTMYUBnjWJxLR2tgLcBobc36'
+let Slack = require('slack')
+global.bot = new Slack({token})
+
+global.server_id = 687964407975772160
+global.miss_participants = "UHZ8C1QVB".split(' ');
+global.miss_teachers = "UHZ8C1QVB".split(' ');
+global.admin = "UHZ8C1QVB".split(' ');
+
+global.options = {
+    protocol: 'https:',
+    headers: {
+        'cookie': 'auth_token='+"d6b2b05a81a486be6fd55941670cf18ce72837b6"+'; path=/; domain=.dragonapi.codabra.org;',
+        'Content-Type':'application/json',
+    }
+}
+
+client.login("NzA1MzUxNjc5MjIyMDg3NzA0.XqqeUQ.7q2nm5sKDpCkI3g0rwsv6CgUElM");  

@@ -93,6 +93,8 @@ let timmers = []
 
 let message_buffer=[];
 
+let g_data=[];
+
 
 function checkRoleA(gd){
 
@@ -355,6 +357,9 @@ function setTimmer(minutes, data, func){
 
 function timeManagment(lesson_data){
     
+    g_data = null
+    g_data = lesson_data
+
     setTimmer(+10, lesson_data, pInChannel)
 
     setTimmer(-35, _groupByTime(lesson_data.filter( ld => ld.title.toUpperCase().indexOf("ИЗ") == -1 )) , tInChannel )
@@ -675,6 +680,51 @@ function togleRole(msg, group, user){
 
 }
 
+function nameCompare(nickname, first_name='', last_name=''){
+    
+    let fn_mark = false
+    let ln_mark = false
+    
+    nickname = nickname.split(" ")
+    nickname = _findAbbName(nickname)
+    
+    for (let j=0;j<nickname.length;j++){
+        if ( nickname[j].toLowerCase().replace(/ё/g,'е') == 
+            first_name.toLowerCase().replace(/ё/g,'е') ){
+                fn_mark = true;
+            }
+        else if( nickname[j].toLowerCase().replace(/ё/g,'е') == 
+            last_name.toLowerCase().replace(/ё/g,'е') ) {
+                ln_mark = true;
+            }
+    }
+    if (fn_mark && ln_mark) 
+    {   
+        return true 
+    }
+    return false
+
+}
+
+function sendMessageFromDk(nickname, msg){
+    bot.users.list().then(lt =>{
+        let member = lt.members.filter(member=>
+            nameCompare(nickname, 
+                member.profile.first_name,
+                member.profile.last_name)
+        )
+        let message ='<https://discordapp.com/channels/'+server_id+'/'+msg.channel.id+'|:discord:> ' + 
+                       "*"+msg.channel.name.toUpperCase()+"*\n" +
+                       "👶"+msg.member.nickname+"\n"+
+                       msg.content.replace(/[<][@][!][0-9]*[>]/gm, "@"+nickname)
+
+        if(member.length>0){
+            send(member[0].id.split(" "), message);
+        }
+    })
+}
+
+
 function message(msg,mmsg){
 
     if (mmsg) msg = mmsg
@@ -859,7 +909,83 @@ function message(msg,mmsg){
         // groupAndUserInfo(groups, true)
 
     }
+    else{
+        let mention = msg.mentions;
+        if(!mention.everyone){
+            if(mention.members.array().length > 0){
+                let members = mention.members.filter(
+                    member => member.roles.cache.find(
+                        role => role.name=="Преподаватель" || 
+                        role.name=="Administrator" ||
+                        role.name=="AdMinistrator" ||
+                        role.name=="Менеджер"
+                        ) 
+                    ).array()
+
+                for(let i=0;i<members.length; i++){
+                    
+                    let nickname;
+
+                    if (!members[i].nickname)
+                        nickname = members[i].user.username
+                    else
+                        nickname = members[i].nickname
+
+                    // g_data.push({
+                    //    teacher: {
+                    //        first_name:"Артём",
+                    //        last_name:"Лева"
+                    //    },
+                    //    title:"test",
+                    //    time:'2020-10-22T02:45:00'
+                    // })
+                    
+                    // g_data.push({
+                    //     teacher: {
+                    //         first_name:"Артём",
+                    //         last_name:"Лева"
+                    //     },
+                    //     title:"test",
+                    //     time:'2020-10-22T01:45:00'
+                    //  })
+
+                    if (g_data){
+                        let groups = g_data.filter( g=>nameCompare(
+                            nickname, 
+                            g.teacher.first_name,  
+                            g.teacher.last_name) )
+                            
+
+                            let ct = new Date()
+
+                            for(var j=0;j<groups.length;j++){
+                                let g = groups[j]
+
+                                let gr = new Date(g.time);
+                                let cm = Math.round((ct-gr)/60000)
+
+                                if ( cm <= 150 && cm >=  -40 ) {
+                                         
+                                    if (g.title.toLowerCase().replace(".","").replace(/\s?\((.*)\)/gm,"") == 
+                                        msg.channel.name.toLowerCase().replace(".","").replace(/\s?\((.*)\)/gm,"")){
+                                            return
+                                    }
+                                    else{
+                                        setTimeout( sendMessageFromDk, 9600000 - cm*60000, nickname, msg )
+                                        return
+                                    }
+                                }
+
+                            }
+                            sendMessageFromDk(nickname, msg )
+                    }
+                }
+            }
+        }
+    }
 }
+
+
 
 module.exports.timeManagment = timeManagment
 global.tInChannel = tInChannel
