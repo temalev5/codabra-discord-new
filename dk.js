@@ -713,7 +713,7 @@ function sendMessageFromDk(nickname, msg){
                 member.profile.first_name,
                 member.profile.last_name)
         )
-        let message ='<https://discordapp.com/channels/'+server_id+'/'+msg.channel.id+'|:discord:> ' + 
+        let message =':discord: ' + 
                        "*"+msg.channel.name.toUpperCase()+"*\n" +
                        "👶"+msg.member.nickname+"\n"+
                        msg.content.replace(/[<][@][!][0-9]*[>]/gm, "@"+nickname)
