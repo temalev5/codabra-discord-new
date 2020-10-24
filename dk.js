@@ -94,6 +94,7 @@ let timmers = []
 let message_buffer=[];
 
 let g_data=[];
+// let l_data=[];
 
 
 function checkRoleA(gd){
@@ -344,6 +345,12 @@ function _groupByTime(lesson_data){
 }
 
 function setTimmer(minutes, data, func){
+
+    // if (minutes == -35){
+    //     l_data = null
+    //     l_data = data;
+    // }
+
     for(var i=0;i<data.length;i++){
         let current_time = new Date();
         let less_date = new Date (data[i].time);
@@ -800,8 +807,8 @@ function message(msg,mmsg){
 
         let group;
 
-        if(message.search(/[а-яА-Я][.][0-9а-яА-Я]*[.]?[0-9а-яА-Я]*[-][0-9]+[\s]?[0-9-()]*/gm) != -1){
-            group = message.match(/[а-яА-Я][.][0-9а-яА-Я]*[.]?[0-9а-яА-Я]*[-][0-9]+[\s]?[0-9-()]*/gm)[0]
+        if(message.search(/[О][.][0-9а-яА-Я]*[.]?[0-9а-яА-Я]*[-][0-9]+[\s]?[0-9-()]*/gm) != -1){
+            group = message.match(/[О][.][0-9а-яА-Я]*[.]?[0-9а-яА-Я]*[-][0-9]+[\s]?[0-9-()]*/gm)[0]
             // for (var i=0;i<g.length;i++){
             //     groups.push(g[i].toUpperCase())
             // }
@@ -987,6 +994,13 @@ function message(msg,mmsg){
 
 
 
+// function voiceChange( oldState , newState ){
+//     g_data;
+//     l_data;
+//     console.log("test")
+// }
+
+global.voiceChange = voiceChange
 module.exports.timeManagment = timeManagment
 global.tInChannel = tInChannel
 global.message = message
