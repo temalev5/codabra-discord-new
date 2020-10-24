@@ -1000,7 +1000,7 @@ function message(msg,mmsg){
 //     console.log("test")
 // }
 
-global.voiceChange = voiceChange
+// global.voiceChange = voiceChange
 module.exports.timeManagment = timeManagment
 global.tInChannel = tInChannel
 global.message = message
