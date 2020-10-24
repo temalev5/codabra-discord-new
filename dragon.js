@@ -12,7 +12,10 @@ let today;
 let gandu = [];
 
 function _queryInfo(req){
+
     let res = buffer.findIndex(b=>b.path == req.path)
+
+
     res = JSON.parse( buffer.splice(res,1)[0].buff )
     if (res.results) {res = res.results}
 
@@ -39,7 +42,7 @@ function onend(){
     
     if (api == 'lesson'){
 
-        res = res.filter(ls=>ls.group.title.search(/[а-яА-Я][.][0-9а-яА-Я]*[.]?[0-9а-яА-Я]*[-][0-9]+[\s0-9-()]*/gm) != -1 )
+        res = res.filter(ls=>ls.group.title.search(/[О][.][0-9а-яА-Я]*[.]?[0-9а-яА-Я]*[-][0-9]+[\s0-9-()]*/gm) != -1 )
 
         if (res.length == 0){
             working = false;
