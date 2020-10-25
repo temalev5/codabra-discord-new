@@ -807,8 +807,8 @@ function message(msg,mmsg){
 
         let group;
 
-        if(message.search(/[О][.][0-9а-яА-Я]*[.]?[0-9а-яА-Я]*[-][0-9]+[\s]?[0-9-()]*/gm) != -1){
-            group = message.match(/[О][.][0-9а-яА-Я]*[.]?[0-9а-яА-Я]*[-][0-9]+[\s]?[0-9-()]*/gm)[0]
+        if(message.search(/[о][.][0-9а-яА-Я]*[.]?[0-9а-яА-Я]*[-][0-9]+[\s]?[0-9-()]*/gm) != -1){
+            group = message.match(/[о][.][0-9а-яА-Я]*[.]?[0-9а-яА-Я]*[-][0-9]+[\s]?[0-9-()]*/gm)[0]
             // for (var i=0;i<g.length;i++){
             //     groups.push(g[i].toUpperCase())
             // }
