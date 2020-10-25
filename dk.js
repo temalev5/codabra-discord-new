@@ -217,6 +217,10 @@ function _getGroupInfo(group){
             color:16232999,
             category:694888469364736040,
         },
+        "Д":{
+            color:16232999,
+            category:694888469364736040,
+        },
         "Ю":{
             color:8684684,
             category:708649086919901214,
