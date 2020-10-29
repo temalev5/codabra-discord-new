@@ -94,7 +94,7 @@ let timmers = []
 let message_buffer=[];
 
 let g_data=[];
-// let l_data=[];
+let l_data=[];
 
 
 function checkRoleA(gd){
@@ -296,7 +296,7 @@ function createGroup(group, msg, group, user){
 
 function deleteGroups(groups){
     for (var i=0; i<groups.length;i++){
-        let channel = guild.channels.cache.find( ch => ch.name == groups[i].toLowerCase().replace(".","").replace(/\s?\((.*)\)/gm,"") )
+        let channel = guild.channels.cache.find( ch => ch.name == groups[i].toLowerCase().replace(/\./gm,"").replace(/\s?\((.*)\)/gm,"") )
         if (channel)
             channel.delete()
                    .then( ()=> { send(admin, "Удален текстовый канал " + channel.name) } )
@@ -350,10 +350,10 @@ function _groupByTime(lesson_data){
 
 function setTimmer(minutes, data, func){
 
-    // if (minutes == -35){
-    //     l_data = null
-    //     l_data = data;
-    // }
+    if (minutes == -35){
+        l_data = null
+        l_data = data;
+    }
 
     for(var i=0;i<data.length;i++){
         let current_time = new Date();
@@ -363,11 +363,22 @@ function setTimmer(minutes, data, func){
             continue
         }
         timmers.push(setTimeout(func, less_date - current_time, data[i]));
+        console.log((less_date - current_time)/1000)
     }
 }
 
 function timeManagment(lesson_data){
     
+    lesson_data.unshift({
+        start:false,
+        end:false,
+        teacher:{
+            first_name:"Артём",
+            last_name:"Лева"
+        },
+        title:"О.У1К20-20",
+        time:"2020-10-26T01:01:00"
+    })
     g_data = null
     g_data = lesson_data
 
@@ -407,7 +418,16 @@ function tInChannel(time_slot){
 
     }
 
-    out.messageAboutMissTeachers(time_slot)
+    out.messageAboutMissTeachers(time_slot).then( (res) => {
+        let idx = l_data.findIndex(ld => ld.time == time_slot.time);
+        l_data[idx].ts = res
+        setTimeout(() => {
+            l_data[idx].cheker = true
+        }, 1);
+        setTimeout(() => {
+            l_data[idx].cheker = false
+        }, 120000);
+    })
 
 }
 
@@ -997,14 +1017,13 @@ function message(msg,mmsg){
 }
 
 
+function voiceChange( oldState , newState ){
+    g_data;
+    l_data;
+    console.log(newState.selfVideo)
+}
 
-// function voiceChange( oldState , newState ){
-//     g_data;
-//     l_data;
-//     console.log("test")
-// }
-
-// global.voiceChange = voiceChange
+global.voiceChange = voiceChange
 module.exports.timeManagment = timeManagment
 global.tInChannel = tInChannel
 global.message = message

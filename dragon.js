@@ -23,17 +23,31 @@ function _queryInfo(req){
 }
 
 
-function onendgroup(){
-    let titles = [];
-    let res = _queryInfo(this.req)
-    for (var i=0;i<res.length;i++){
-        titles.push(res[i].title)
-    }
-    
-    if (titles){
-        dk.deleteGroups(titles)
-    }
+let onendgroup = function(pres_less){
+    return function(){
+        let titles = [];
+        let res = _queryInfo(this.req)
+        
+        for (var i=0;i<res.length;i++){
+            if (!pres_less){
+                if (!res[i].presentation_lesson){
+                    titles.push(res[i].title)
+                }
+            }
+            else{
+                titles.push(res[i].title)
+            }
+        }
+        
+        // for (var i=0;i<res.length;i++){
+        //     titles.push(res[i].title)
+        // }
 
+        
+        if (titles){
+            dk.deleteGroups(titles)
+        }
+    }
 }
 
 function onend(){
@@ -329,7 +343,7 @@ function Info(){
                 options, response)
 
     let one_mth_ago = new Date(today);
-    one_mth_ago.setDate(today.getDate()-30)
+    one_mth_ago.setDate(today.getDate()-25)
     
     datetime_today_range = one_mth_ago.getFullYear() + '-' 
                              + (one_mth_ago.getMonth()+1) + '-'
@@ -342,7 +356,31 @@ function Info(){
 
     https.get("https://dragonapi.codabra.org/api/v1/group/?presentation_lesson=" +
                 datetime_today_range+"&limit=999",
-                options, (res)=>{    res.on('data', ondata ); res.on('end', onendgroup ) })
+                options, (res)=>{    res.on('data', ondata ); res.on('end', onendgroup(true) ) })
+
+    https.get("https://dragonapi.codabra.org/api/v1/group/?date=" +
+                datetime_today_range+"&limit=999",
+                options, (res)=>{    res.on('data', ondata ); res.on('end', onendgroup(false) ) })
+
+    let ten_days_ago = new Date(today);
+    ten_days_ago.setDate(today.getDate()-10)
+                
+    datetime_today_range = ten_days_ago.getFullYear() + '-' 
+                             + (ten_days_ago.getMonth()+1) + '-'
+                             + (ten_days_ago.getDate()) + ',' 
+                             + ten_days_ago.getFullYear() + '-' 
+                             + (ten_days_ago.getMonth()+1) + '-' 
+                             + (ten_days_ago.getDate()) ;
+                
+    // Удаление старых групп
+            
+    https.get("https://dragonapi.codabra.org/api/v1/group/?presentation_lesson=" +
+                datetime_today_range+"&lecture_hall__id__in=177&limit=999",
+                options, (res)=>{    res.on('data', ondata ); res.on('end', onendgroup(true) ) })
+
+    https.get("https://dragonapi.codabra.org/api/v1/group/?date=" +
+                datetime_today_range+"&lecture_hall__id__in=177&limit=999",
+                options, (res)=>{    res.on('data', ondata ); res.on('end', onendgroup(false) ) })
 }
 
 global.groupAndUserInfo = groupAndUserInfo
