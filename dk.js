@@ -418,16 +418,16 @@ function tInChannel(time_slot){
 
     }
 
-    out.messageAboutMissTeachers(time_slot).then( (res) => {
-        let idx = l_data.findIndex(ld => ld.time == time_slot.time);
-        l_data[idx].ts = res
-        setTimeout(() => {
-            l_data[idx].cheker = true
-        }, 1);
-        setTimeout(() => {
-            l_data[idx].cheker = false
-        }, 120000);
-    })
+    // out.messageAboutMissTeachers(time_slot).then( (res) => {
+    //     let idx = l_data.findIndex(ld => ld.time == time_slot.time);
+    //     l_data[idx].ts = res
+    //     setTimeout(() => {
+    //         l_data[idx].cheker = true
+    //     }, 1);
+    //     setTimeout(() => {
+    //         l_data[idx].cheker = false
+    //     }, 120000);
+    // })
 
 }
 
