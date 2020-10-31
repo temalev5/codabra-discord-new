@@ -380,7 +380,7 @@ function timeManagment(lesson_data){
             last_name:"Лева"
         },
         title:"О.У1К20-20",
-        time:"2020-10-30T19:16:00"
+        time:"2020-10-31T12:22:00"
     })
     g_data = null
     g_data = lesson_data
@@ -420,6 +420,8 @@ function tInChannel(time_slot){
         time_slot.teachers[i].status = mStatus(member)
 
     }
+
+    out.messageAboutMissTeachers(time_slot)
 
     // out.messageAboutMissTeachers(time_slot).then( (res) => {
     //     let idx = l_data.findIndex(ld => ld.time == time_slot.time);
@@ -1037,9 +1039,9 @@ function message(msg,mmsg){
 
 
 function voiceChange( oldState , newState ){
-    g_data;
-    l_data;
-    console.log(newState.selfVideo)
+    // g_data;
+    // l_data;
+    // // console.log(newState.selfVideo)
 }
 
 global.voiceChange = voiceChange
