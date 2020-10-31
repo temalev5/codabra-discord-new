@@ -110,8 +110,8 @@ function checkRoleA(gd){
                 color: 16711680,
                 description: "Привет <@"+mb.msg.member.id+">\n\
                               Не удалось найти **группу `` "+ mb.group.toUpperCase() +" ``**\n\
-                              Попробуй еще раз, напиши **Имя Фамилию Группу**\n\
-                              **Пример:** *Юлия Беляева О.У1ВВА1-19*\n\
+                              Попробуй еще раз, напиши "+ (mb.teacher ? "**Группу**" : "**Имя Фамилию Группу**")+"\n\
+                              **Пример:** "+ (!mb.teacher ? "*Юлия Беляева* " : "") + "*О.У1ВВА1-19*\n\
                               **Если не знаешь какая у тебя группа, посмотри сюда:** https://www.notion.so/2dc2dc0f96ee44ba924d441f98c1ce3f\n\
                               На всякий случай я переслал твое сообщение в Поддержку"
                     }
@@ -153,7 +153,7 @@ function checkRoleA(gd){
         }
     }
 
-    if (!group){
+    if (!group && !mb.teacher){
         mb.msg.channel.send('',{
             embed: {
                 color: 16711680,
@@ -181,11 +181,14 @@ function checkRoleA(gd){
         return;
     }
     else{
-        mb.msg.member.edit({
-            nick: f_name[0][0].toUpperCase() + f_name[0].substring(1) + ' ' + 
-                  f_name[1][0].toUpperCase() + f_name[1].substring(1) + ' ' +
-                  group.toUpperCase()
-       })
+        if (!mb.teacher)
+            mb.msg.member.edit({
+                nick: f_name[0][0].toUpperCase() + f_name[0].substring(1) + ' ' + 
+                    f_name[1][0].toUpperCase() + f_name[1].substring(1) + ' ' +
+                    group.toUpperCase()
+            })
+        else
+            group = gd.group.toLowerCase().replace(/\s?\((.*)\)/gm,"")
        togleRole(mb.msg, group, true)
     }
 }
@@ -254,7 +257,7 @@ function _getGroupInfo(group){
     return 0; 
 }
 
-function createGroup(group, msg, group, user){
+function createGroup(group, msg, user){
 
     gInfo = _getGroupInfo(group)
 
@@ -278,7 +281,7 @@ function createGroup(group, msg, group, user){
     
         });
 
-        guild.channels.create(group.toLowerCase().replace(".","").replace(/\s?\((.*)\)/gm,""), {
+        guild.channels.create(group.toLowerCase().replace(/\./gm,"").replace(/\s?\((.*)\)/gm,""), {
             type:"text",
             nsfw:false,
             parent: guild.channels.cache.find(ch => ch.id == gInfo.category),
@@ -377,7 +380,7 @@ function timeManagment(lesson_data){
             last_name:"Лева"
         },
         title:"О.У1К20-20",
-        time:"2020-10-26T01:01:00"
+        time:"2020-10-30T19:16:00"
     })
     g_data = null
     g_data = lesson_data
@@ -689,7 +692,7 @@ function checkRole(group_data){
 }
 
 function _setRole(role, msg, group, user){
-    if (msg.member.roles.cache.find(role => role.name == 'Ученик ' + group.toUpperCase() ) && !user){
+    if (msg.member.roles.cache.find(role => role.name == 'Ученик ' + group.toUpperCase().replace(/\s?\((.*)\)/gm,"") ) && !user){
         msg.member.roles.remove(role)
                         .then( () => {msg.react('👍')})
     }
@@ -701,10 +704,26 @@ function _setRole(role, msg, group, user){
 
 function togleRole(msg, group, user){
 
-    let role = msg.guild.roles.cache.find(role=>role.name == 'Ученик ' + group.toUpperCase() )
-    if (!role && user){
-        createGroup(group, msg, group, user);
-        return
+    let role = msg.guild.roles.cache.find(role=>role.name == 'Ученик ' + group.toUpperCase().replace(/\s?\((.*)\)/gm,"") )
+    if (!role){
+        if (user){
+            createGroup(group, msg, user);
+            return
+        }
+        else{
+            let key = Math.random().toString(36).replace(/[^a-z]+/g, '').substr(0, 5);
+
+            message_buffer.push({
+                key: key,
+                msg:msg,
+                group:group,
+                f_name:"",
+                teacher:!user,
+            })
+
+            groupAndUserInfo(key, group)
+            return
+        }
     }
 
     _setRole(role, msg, group, user)
