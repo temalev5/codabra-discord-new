@@ -343,7 +343,7 @@ function Info(){
                 options, response)
 
     let one_mth_ago = new Date(today);
-    one_mth_ago.setDate(today.getDate()-25)
+    one_mth_ago.setDate(today.getDate()-23)
     
     datetime_today_range = one_mth_ago.getFullYear() + '-' 
                              + (one_mth_ago.getMonth()+1) + '-'
