@@ -343,7 +343,7 @@ function Info(){
                 options, response)
 
     let one_mth_ago = new Date(today);
-    one_mth_ago.setDate(today.getDate()-23)
+    one_mth_ago.setDate(today.getDate()-22)
     
     datetime_today_range = one_mth_ago.getFullYear() + '-' 
                              + (one_mth_ago.getMonth()+1) + '-'
@@ -363,7 +363,7 @@ function Info(){
                 options, (res)=>{    res.on('data', ondata ); res.on('end', onendgroup(false) ) })
 
     let ten_days_ago = new Date(today);
-    ten_days_ago.setDate(today.getDate()-10)
+    ten_days_ago.setDate(today.getDate()-9)
                 
     datetime_today_range = ten_days_ago.getFullYear() + '-' 
                              + (ten_days_ago.getMonth()+1) + '-'
