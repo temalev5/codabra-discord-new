@@ -257,8 +257,10 @@ let onendGandU = function(key, group){
                 res.title.toLowerCase().replace(/\s?\((.*)\)/gm,"") )
                 return
         
-        if (res.participants.length == 0)
-                return
+        if (res.participants.length == 0){
+            dk.checkRoleA({key:key,participants:[],group:res.title})
+            return
+        }
 
         gandu.push({
             key:key,
@@ -343,7 +345,7 @@ function Info(){
                 options, response)
 
     let one_mth_ago = new Date(today);
-    one_mth_ago.setDate(today.getDate()-22)
+    one_mth_ago.setDate(today.getDate()-20)
     
     datetime_today_range = one_mth_ago.getFullYear() + '-' 
                              + (one_mth_ago.getMonth()+1) + '-'
@@ -363,7 +365,7 @@ function Info(){
                 options, (res)=>{    res.on('data', ondata ); res.on('end', onendgroup(false) ) })
 
     let ten_days_ago = new Date(today);
-    ten_days_ago.setDate(today.getDate()-9)
+    ten_days_ago.setDate(today.getDate()-8)
                 
     datetime_today_range = ten_days_ago.getFullYear() + '-' 
                              + (ten_days_ago.getMonth()+1) + '-'
