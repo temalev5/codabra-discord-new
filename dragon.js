@@ -28,8 +28,32 @@ let onendgroup = function(pres_less){
         let titles = [];
         let res = _queryInfo(this.req)
         
+        // const fs = require('fs')
+        // let json2xls = require('json2xls');
+
+        // var jsonArr = [];
+
+
+        // let xls = json2xls(jsonArr);
+
+        // fs.writeFileSync('data.xlsx', xls, 'binary');
+
         for (var i=0;i<res.length;i++){
             if (!pres_less){
+                
+                // if ( res[i].title.toLowerCase().indexOf("test") > -1 )//|| 
+                //     //  res[i].title.toLowerCase().indexOf("пз") > -1 || 
+                //     //  res[i].title.toLowerCase().indexOf("из") > -1 )
+                //      {
+                //          continue
+                //      }
+                // jsonArr.push({
+                //     title: res[i].title,
+                //     start: res[i].start_of_lessons,
+                //     end: res[i].end_of_lessons,
+                //     participants_count: res[i].participants_count
+                // })
+
                 if (!res[i].presentation_lesson){
                     titles.push(res[i].title)
                 }
@@ -38,6 +62,11 @@ let onendgroup = function(pres_less){
                 titles.push(res[i].title)
             }
         }
+
+        // if (!pres_less){
+        //     let xls = json2xls(jsonArr);
+        //     fs.writeFileSync('data.xlsx', xls, 'binary');
+        // }
         
         // for (var i=0;i<res.length;i++){
         //     titles.push(res[i].title)
@@ -345,7 +374,7 @@ function Info(){
                 options, response)
 
     let one_mth_ago = new Date(today);
-    one_mth_ago.setDate(today.getDate()-20)
+    one_mth_ago.setDate(today.getDate()-15)
     
     datetime_today_range = one_mth_ago.getFullYear() + '-' 
                              + (one_mth_ago.getMonth()+1) + '-'
@@ -361,11 +390,11 @@ function Info(){
                 options, (res)=>{    res.on('data', ondata ); res.on('end', onendgroup(true) ) })
 
     https.get("https://dragonapi.codabra.org/api/v1/group/?date=" +
-                datetime_today_range+"&limit=999",
+                datetime_today_range+"&city__id__in=1&limit=999",
                 options, (res)=>{    res.on('data', ondata ); res.on('end', onendgroup(false) ) })
 
     let ten_days_ago = new Date(today);
-    ten_days_ago.setDate(today.getDate()-8)
+    ten_days_ago.setDate(today.getDate()-7)
                 
     datetime_today_range = ten_days_ago.getFullYear() + '-' 
                              + (ten_days_ago.getMonth()+1) + '-'
