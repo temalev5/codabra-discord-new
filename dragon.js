@@ -394,7 +394,7 @@ function Info(){
                 options, (res)=>{    res.on('data', ondata ); res.on('end', onendgroup(false) ) })
 
     let ten_days_ago = new Date(today);
-    ten_days_ago.setDate(today.getDate()-7)
+    ten_days_ago.setDate(today.getDate()-6)
                 
     datetime_today_range = ten_days_ago.getFullYear() + '-' 
                              + (ten_days_ago.getMonth()+1) + '-'
