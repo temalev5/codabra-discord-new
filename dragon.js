@@ -1,5 +1,7 @@
 const dk = require("./dk.js");
 const https = require('https');
+// var smsc = require('./smsc.js');
+// const { resolveMx } = require("dns");
 
 let buffer = []
 let lesson_data = []
@@ -10,6 +12,32 @@ let wg = false;
 let today;
 
 let gandu = [];
+
+// smsc.configure({
+//     login : encodeURI('Кодабра'),
+//     password : 'Df03nblG',
+//     ssl : true,
+//     charset : 'utf-8',
+// });
+
+
+function isToday(date){
+    
+    if (date){
+        let end = new Date(date)
+        if ( end.getFullYear() == today.getFullYear() && 
+             end.getMonth() == today.getMonth() && 
+             end.getDate() == today.getDate()){
+                return true
+                //lesson_data[id_group].end = true
+        }
+        else {
+            return false//lesson_data[id_group].end = false
+        }
+    }
+    
+    return false
+}
 
 function _queryInfo(req){
 
@@ -79,13 +107,14 @@ let onendgroup = function(pres_less){
     }
 }
 
+
 function onend(){
     let api = this.req.path.split('/')[3]
     let res = _queryInfo(this.req)
     
     if (api == 'lesson'){
-
-        res = res.filter(ls=>ls.group.title.search(/[О][.][0-9а-яА-Я]*[.]?[0-9а-яА-Я]*[-][0-9]+[\s0-9-()]*/gm) != -1 )
+        res = res.filter(ls=> ls.group ? ls.group.title.search(/[О][.][0-9а-яА-Я]*[.]?[0-9а-яА-Я]*[-][0-9]+[\s0-9-()]*/gm) != -1 : null )
+        //res = res.filter(ls=>ls.group.title.search(/[О][.][0-9а-яА-Я]*[.]?[0-9а-яА-Я]*[-][0-9]+[\s0-9-()]*/gm) != -1 )
 
         if (res.length == 0){
             working = false;
@@ -145,17 +174,21 @@ function onend(){
             return
         }
 
-        if (res.presentation_lesson){
-            let end = new Date(res.presentation_lesson)
-            if ( end.getFullYear() == today.getFullYear() && 
-                 end.getMonth() == today.getMonth() && 
-                 end.getDate() == today.getDate()){
-                    lesson_data[id_group].end = true
-            }
-            else {
-                lesson_data[id_group].end = false
-            }
-        }
+        lesson_data[id_group].end = isToday(res.presentation_lesson)
+        lesson_data[id_group].last = isToday(res.end_of_lessons)
+
+        let b = 20;
+        // if (res.presentation_lesson){
+        //     let end = new Date(res.presentation_lesson)
+        //     if ( end.getFullYear() == today.getFullYear() && 
+        //          end.getMonth() == today.getMonth() && 
+        //          end.getDate() == today.getDate()){
+        //             lesson_data[id_group].end = true
+        //     }
+        //     else {
+        //         lesson_data[id_group].end = false
+        //     }
+        // }
 
         for (var i=0;i<res.participants.length;i++){
             lesson_data[id_group].participants.push({
@@ -351,11 +384,50 @@ function groupOrUserInfo(message, status){
                     options, response)
 }
 
+
 function Info(){
     buffer = []
     lesson_data = []
     counter = 0;
     working = true;
+
+    // let datax = JSON.stringify({
+    //         "channel":"whatsapp",
+    //         "channelId":"2075",
+    //         "remoteAddress":"tel:+79080372934",
+    //         "text":"tesxxxt"
+    // }) 
+
+    // let optionsx = { 
+    //     hostname: 'api.textback.io',
+    //     path:"/api/messages",
+    //     headers: {
+    //         "Authorization":"Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzY29wZXMiOlsiYWNjb3VudDphZGRfdXNlcnMiLCJhY2NvdW50OmVkaXRfb3duX3Byb2ZpbGUiLCJhY2NvdW50OmVkaXRfdXNlcnMiLCJhY2NvdW50OnJlbW92ZV91c2VycyIsImFjY291bnQ6dmlld191c2VycyIsImFwaXRva2Vuczppc3N1ZSIsImF0dGFjaG1lbnRzOnVwbG9hZCIsImNoYW5uZWw6Y3JlYXRlIiwiY2hhbm5lbDpnZXRfYnlfYWNjb3VudCIsImNoYXQ6Z2V0IiwiY2hhdDppbml0aWF0ZSIsImNoYXQ6bWFya19yZWFkIiwiY2hhdDptYXJrX3VucmVhZCIsImNoYXQ6cmVwbHkiLCJlbmR1c2VyX25vdGlmaWNhdGlvbnM6Z2V0X2luZm8iLCJlbmR1c2VyX25vdGlmaWNhdGlvbnM6Z2V0X3N1YnNjcmlwdGlvbnMiLCJlbmR1c2VyX25vdGlmaWNhdGlvbnM6bWFuZ2Vfd2lkZ2V0cyIsImVuZHVzZXJfbm90aWZpY2F0aW9uczpyZW1vdmVfc3Vic2NyaXB0aW9ucyIsImVuZHVzZXJfbm90aWZpY2F0aW9uczpzZW5kIiwiaW50ZXJhY3RpdmVfY2hhaW5zOm1hbmFnZSIsImludm9pY2VzOnBheSIsIm1lc3NhZ2VUZW1wbGF0ZTpnZXQiLCJtZXNzYWdlVGVtcGxhdGU6bWFuYWdlIiwibm90aWZpY2F0aW9uX3dlYmhvb2tzOmFkZCIsIm5vdGlmaWNhdGlvbl93ZWJob29rczpyZW1vdmUiLCJyZXBvcnRzOnZpZXciLCJzdWJzY3JpcHRpb25zOmFjdGl2YXRlIiwic3Vic2NyaXB0aW9uczpnZXQiLCJ3aWRnZXQ6Z2V0Iiwid2lkZ2V0Om1vZGlmeSJdLCJhY2NvdW50LmlkIjoiNmM1MGE0NWMtZjBlZS00MzExLTlhYjctYzI2YmU5NmFiYWIwIiwidXNlci5pZCI6ImViMDI2ZTkzLTI0YTEtNDNmZi04ZDJkLWUzMzYwNTE4ZjFiNSIsIm5iZiI6MTU5NjI2OTY3NywianRpIjoiMTlhNGM3MmUtNWM0OC03OWQ5LWJmZWItMDE3M2E5MTY0OWUwIiwiaWF0IjoxNTk2MjY5Njc3LCJleHAiOjE2Mjc4MDU2NzcsImlzcyI6Imh0dHBzOi8vaWQudGV4dGJhY2suaW8vYXV0aC8iLCJzdWIiOiJlYjAyNmU5My0yNGExLTQzZmYtOGQyZC1lMzM2MDUxOGYxYjUifQ.TTvT2cXrWn-uy4RFSaX-MszMGtSfUFKC4UOKxezhIYA",
+    //         'Content-Type':'text/plain'
+    //     },
+    //     method: 'POST'
+    // }
+
+    // const reqx = https.request(optionsx, (res) => {
+    //     res.on('data', ondata )
+    //     res.on('end', onendgroup(true))
+    // });
+
+    // reqx.end(datax);
+
+    // smsc.test(function (err) {
+    //     if (err) {
+    //         console.log('error: ' + err);
+    //     }
+    // });
+
+
+    // https.get("https://smsc.ru/sys/send.php?login=Кодабра&psw=Df03nblG&phones=+79080372934&mes=ваываываы",
+    // (res)=>{    res.on('data', ondata ); 
+    //             res.on('end', onendgroup(true) ) 
+    // })
+
+
 
     dk.clearTimmers()
 
