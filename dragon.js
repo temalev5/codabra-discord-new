@@ -153,7 +153,10 @@ function onend(){
         }
     }
     else if(api == 'group'){
-        let id_group = lesson_data.findIndex(less=>less.id == res.id)
+        let id_group = -1;
+        if (res.id){
+            id_group = lesson_data.findIndex(less=>less.id == res.id)
+        }
 
         if (id_group == -1){
             id_group = lesson_data.findIndex(less=>less.id == this.req.path.split('/')[4])
@@ -168,6 +171,8 @@ function onend(){
             }
             return
         }
+
+        delete lesson_data[id_group].id;
 
         if (res.participants.length<=0){
             lesson_data.splice(id_group, 1)
