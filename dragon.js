@@ -10,6 +10,8 @@ let working = false;
 let req_query = [];
 let wg = false;
 let today;
+let one_mth_ago;
+let ten_days_ago;
 
 let gandu = [];
 
@@ -323,6 +325,23 @@ let onendGandU = function(key, group){
         if ( group.toLowerCase().replace(/\s?\((.*)\)/gm,"") != 
                 res.title.toLowerCase().replace(/\s?\((.*)\)/gm,"") )
                 return
+
+        if (!res.presentation_lesson){
+            res.presentation_lesson = res.start_of_lesson;
+        }
+        
+        if (res.lecture_hall.id == 177){
+            if ( new Date(res.presentation_lesson) < new Date(ten_days_ago).setDate(ten_days_ago.getDate()+1 ) ){
+                dk.checkRoleA({key:key, error_code: 2});
+                return
+            }
+        }
+        else{
+            if ( new Date(res.presentation_lesson) < new Date(one_mth_ago).setDate(one_mth_ago.getDate()+1 ) ){
+                dk.checkRoleA({key:key, error_code: 2});
+                return
+            }
+        }
         
         if (res.participants.length == 0){
             dk.checkRoleA({key:key,participants:[],group:res.title})
@@ -450,8 +469,8 @@ function Info(){
                 datetime_today_range+"&limit=999",
                 options, response)
 
-    let one_mth_ago = new Date(today);
-    one_mth_ago.setDate(today.getDate()-process.env.deleteGroupDay)
+    one_mth_ago = new Date(today);
+    one_mth_ago.setDate(today.getDate()-process.env.deleteGroupDay)//process.env.deleteGroupDay)
     
     datetime_today_range = one_mth_ago.getFullYear() + '-' 
                              + (one_mth_ago.getMonth()+1) + '-'
@@ -470,8 +489,8 @@ function Info(){
                 datetime_today_range+"&city__id__in=1&limit=999",
                 options, (res)=>{    res.on('data', ondata ); res.on('end', onendgroup(false) ) })
 
-    let ten_days_ago = new Date(today);
-    ten_days_ago.setDate(today.getDate()-process.env.deleteIzDay)
+    ten_days_ago = new Date(today);
+    ten_days_ago.setDate(today.getDate()-process.env.deleteIzDay)//process.env.deleteIzDay)
                 
     datetime_today_range = ten_days_ago.getFullYear() + '-' 
                              + (ten_days_ago.getMonth()+1) + '-'
