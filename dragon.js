@@ -113,7 +113,7 @@ function onend(){
     let res = _queryInfo(this.req)
     
     if (api == 'lesson'){
-        res = res.filter(ls=> ls.group ? ls.group.title.search(/[О][.][0-9а-яА-Я]*[.]?[0-9а-яА-Я]*[-][0-9]+[\s0-9-()]*/gm) != -1 : null )
+        res = res.filter(ls=> ls.group ? ls.group.title.search(/[О][.][0-9а-яА-Я]*[.]?[0-9а-яА-Я]*[-][0-9]+[\s0-9-()]*/gm) != -1 && ls.group.title.indexOf("Z") == -1: null )
         //res = res.filter(ls=>ls.group.title.search(/[О][.][0-9а-яА-Я]*[.]?[0-9а-яА-Я]*[-][0-9]+[\s0-9-()]*/gm) != -1 )
 
         if (res.length == 0){
