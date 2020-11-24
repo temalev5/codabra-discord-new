@@ -97,6 +97,8 @@ let g_data=[];
 let l_data=[];
 
 
+
+
 function checkRoleA(gd){
 
     let support_channel = guild.channels.cache.find(c=>c.name=="посещаемость")
@@ -104,7 +106,7 @@ function checkRoleA(gd){
     let id = message_buffer.findIndex(mb=>mb.key == gd.key)
     let mb = message_buffer.splice(id, 1)[0]
     
-    if (gd.error_code){
+    if (gd.error_code==1){
         mb.msg.channel.send('',{
             embed: {
                 color: 16711680,
@@ -121,6 +123,26 @@ function checkRoleA(gd){
             embed: {
                 color: 16711680,
                 description: "Не удалось найти **группу `` "+ mb.group.toUpperCase() +" ``**\n\
+                              **<@" + mb.msg.member.id + "> пишет:**\n" + mb.msg.content
+            }
+        })
+        return
+    }
+    else if(gd.error_code==2){
+        mb.msg.channel.send('',{
+            embed: {
+                color: 16711680,
+                description: "Привет <@"+mb.msg.member.id+">\n\
+                              **Группа `` "+ mb.group.toUpperCase() +" ``** уже закончилась\n\
+                              **Если не знаешь какая у тебя группа, посмотри сюда:** https://www.notion.so/2dc2dc0f96ee44ba924d441f98c1ce3f\n\
+                              На всякий случай я переслал твое сообщение в Поддержку"
+                    }
+                }).then((m)=>m.delete({ timeout: 120000 }))
+
+        support_channel.send('',{
+            embed: {
+                color: 16711680,
+                description: "**Группа `` "+ mb.group.toUpperCase() +" ``** уже закончилась\n\
                               **<@" + mb.msg.member.id + "> пишет:**\n" + mb.msg.content
             }
         })
@@ -379,8 +401,12 @@ function timeManagment(lesson_data){
             first_name:"Артём",
             last_name:"Лева"
         },
-        title:"О.У1К20-20",
-        time:"2020-10-31T12:22:00"
+        title:"О.КУ1РБ12-20 (10-12)",
+        time:"2020-11-19T11:08:00",
+        participants: [{
+            first_name: "Артём",
+            last_name: "Лева"
+        }],
     })
     g_data = null
     g_data = lesson_data
