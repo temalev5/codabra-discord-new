@@ -230,10 +230,6 @@ function _getGroupInfo(group){
             color:8043081,
             category:708649648629350431,
         },
-        "К":{
-            color:8043081,
-            category:756822329174130698,
-        },
         "КБ":{
             color:333675,
             category:708649821975740416,
@@ -269,7 +265,11 @@ function _getGroupInfo(group){
         "Р":{
             color:14965844,
             category:687986411273715742, 
-        }
+        },
+        "К":{
+            color:8043081,
+            category:756822329174130698,
+        },
     }
 
     for (var key in channels){
@@ -402,7 +402,7 @@ function timeManagment(lesson_data){
             last_name:"Лева"
         },
         title:"О.КУ1РБ12-20 (10-12)",
-        time:"2020-11-19T11:08:00",
+        time:"2020-11-25T13:49:00",
         participants: [{
             first_name: "Артём",
             last_name: "Лева"
@@ -420,6 +420,8 @@ function timeManagment(lesson_data){
 
 function tInChannel(time_slot){
 
+    let members;
+    
     for(var i=0;i<time_slot.teachers.length;i++){
         let channel = guild.channels.cache.find(channel => 
             channel.type =='voice' && 
@@ -445,6 +447,7 @@ function tInChannel(time_slot){
 
         time_slot.teachers[i].status = mStatus(member)
 
+        members.push(member.id)
     }
 
     out.messageAboutMissTeachers(time_slot)
@@ -454,6 +457,9 @@ function tInChannel(time_slot){
     //     l_data[idx].ts = res
     //     setTimeout(() => {
     //         l_data[idx].cheker = true
+    //         for(var i=0;i<members.length;i++){
+
+    //         }
     //     }, 1);
     //     setTimeout(() => {
     //         l_data[idx].cheker = false
@@ -1064,13 +1070,30 @@ function message(msg,mmsg){
 }
 
 
-function voiceChange( oldState , newState ){
-    // g_data;
-    // l_data;
-    // // console.log(newState.selfVideo)
+
+
+function getVoiceState(members, idx){
+
 }
 
-global.voiceChange = voiceChange
+
+//
+// function voiceChange( oldState , newState ){
+//     for (var i=0;i<l_data.length;i++){
+//         if (l_data[i].checker){
+            
+//         }
+//     }
+//     // g_data;
+//     // l_data;
+//     console.log(newState.selfVideo)
+// }
+
+
+
+
+
+// global.voiceChange = voiceChange
 module.exports.timeManagment = timeManagment
 global.tInChannel = tInChannel
 global.message = message
