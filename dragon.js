@@ -58,10 +58,10 @@ let onendgroup = function(pres_less){
         let titles = [];
         let res = _queryInfo(this.req)
         
-        const fs = require('fs')
-        let json2xls = require('json2xls');
+        // const fs = require('fs')
+        // let json2xls = require('json2xls');
 
-        var jsonArr = [];
+        // var jsonArr = [];
 
 
         // let xls = json2xls(jsonArr);
@@ -71,30 +71,30 @@ let onendgroup = function(pres_less){
         for (var i=0;i<res.length;i++){
             if (!pres_less){
                 
-                if ( res[i].title.toLowerCase().indexOf("test") > -1 )//|| 
-                    //  res[i].title.toLowerCase().indexOf("пз") > -1 || 
-                    //  res[i].title.toLowerCase().indexOf("из") > -1 )
-                     {
-                         continue
-                     }
+                // if ( res[i].title.toLowerCase().indexOf("test") > -1 )//|| 
+                //     //  res[i].title.toLowerCase().indexOf("пз") > -1 || 
+                //     //  res[i].title.toLowerCase().indexOf("из") > -1 )
+                //      {
+                //          continue
+                //      }
                 
-                if (res[i].city==1){
-                    res[i].city="Москва"
-                }
-                else{
-                    res[i].city="Санкт-Петербург"
-                }
+                // if (res[i].city==1){
+                //     res[i].city="Москва"
+                // }
+                // else{
+                //     res[i].city="Санкт-Петербург"
+                // }
 
-                jsonArr.push({
-                    title: res[i].title,
-                    start: new Date(res[i].start_of_lessons),
-                    participants_count: res[i].participants_count,
-                    course: res[i].course.title,
-                    lecture_hall: res[i].lecture_hall.title,
-                    finish: res[i].end_of_lessons,
-                    presentation_lesson: res[i].presentation_lesson,
-                    city: res[i].city
-                })
+                // jsonArr.push({
+                //     title: res[i].title,
+                //     start: new Date(res[i].start_of_lessons),
+                //     participants_count: res[i].participants_count,
+                //     course: res[i].course.title,
+                //     lecture_hall: res[i].lecture_hall.title,
+                //     finish: res[i].end_of_lessons,
+                //     presentation_lesson: res[i].presentation_lesson,
+                //     city: res[i].city
+                // })
 
                 if (!res[i].presentation_lesson){
                     titles.push(res[i].title)
@@ -105,19 +105,19 @@ let onendgroup = function(pres_less){
             }
         }
 
-        if (!pres_less){
-            let xls = json2xls(jsonArr);
-            fs.writeFileSync('data.xlsx', xls, 'binary');
-        }
+        // if (!pres_less){
+        //     let xls = json2xls(jsonArr);
+        //     fs.writeFileSync('data.xlsx', xls, 'binary');
+        // }
         
         // for (var i=0;i<res.length;i++){
         //     titles.push(res[i].title)
         // }
 
         
-        // if (titles){
-        //     dk.deleteGroups(titles)
-        // }
+        if (titles){
+            dk.deleteGroups(titles)
+        }
     }
 }
 
