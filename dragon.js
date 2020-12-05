@@ -58,10 +58,10 @@ let onendgroup = function(pres_less){
         let titles = [];
         let res = _queryInfo(this.req)
         
-        // const fs = require('fs')
-        // let json2xls = require('json2xls');
+        const fs = require('fs')
+        let json2xls = require('json2xls');
 
-        // var jsonArr = [];
+        var jsonArr = [];
 
 
         // let xls = json2xls(jsonArr);
@@ -71,18 +71,30 @@ let onendgroup = function(pres_less){
         for (var i=0;i<res.length;i++){
             if (!pres_less){
                 
-                // if ( res[i].title.toLowerCase().indexOf("test") > -1 )//|| 
-                //     //  res[i].title.toLowerCase().indexOf("пз") > -1 || 
-                //     //  res[i].title.toLowerCase().indexOf("из") > -1 )
-                //      {
-                //          continue
-                //      }
-                // jsonArr.push({
-                //     title: res[i].title,
-                //     start: res[i].start_of_lessons,
-                //     end: res[i].end_of_lessons,
-                //     participants_count: res[i].participants_count
-                // })
+                if ( res[i].title.toLowerCase().indexOf("test") > -1 )//|| 
+                    //  res[i].title.toLowerCase().indexOf("пз") > -1 || 
+                    //  res[i].title.toLowerCase().indexOf("из") > -1 )
+                     {
+                         continue
+                     }
+                
+                if (res[i].city==1){
+                    res[i].city="Москва"
+                }
+                else{
+                    res[i].city="Санкт-Петербург"
+                }
+
+                jsonArr.push({
+                    title: res[i].title,
+                    start: new Date(res[i].start_of_lessons),
+                    participants_count: res[i].participants_count,
+                    course: res[i].course.title,
+                    lecture_hall: res[i].lecture_hall.title,
+                    finish: res[i].end_of_lessons,
+                    presentation_lesson: res[i].presentation_lesson,
+                    city: res[i].city
+                })
 
                 if (!res[i].presentation_lesson){
                     titles.push(res[i].title)
@@ -93,19 +105,19 @@ let onendgroup = function(pres_less){
             }
         }
 
-        // if (!pres_less){
-        //     let xls = json2xls(jsonArr);
-        //     fs.writeFileSync('data.xlsx', xls, 'binary');
-        // }
+        if (!pres_less){
+            let xls = json2xls(jsonArr);
+            fs.writeFileSync('data.xlsx', xls, 'binary');
+        }
         
         // for (var i=0;i<res.length;i++){
         //     titles.push(res[i].title)
         // }
 
         
-        if (titles){
-            dk.deleteGroups(titles)
-        }
+        // if (titles){
+        //     dk.deleteGroups(titles)
+        // }
     }
 }
 
@@ -451,6 +463,10 @@ function Info(){
     //             res.on('end', onendgroup(true) ) 
     // })
 
+    // https.get("https://dragonapi.codabra.org/api/v1/group/?default_filter=none&city__id__in=1,2&presentation_lesson=2021-01-10,2021-12-31&ordering=datetime_start&is_active=true&limit=999",
+    //             options, (res)=>{    res.on('data', ondata ); res.on('end', onendgroup(false) ) })
+    
+    //https://dragon.codabra.org/group?default_filter=none&city__id__in=1,2&presentation_lesson=2021-01-10,2021-12-31&ordering=datetime_start&is_active=true
 
 
     dk.clearTimmers()
@@ -470,11 +486,11 @@ function Info(){
                 options, response)
 
     one_mth_ago = new Date(today);
-    one_mth_ago.setDate(today.getDate()-process.env.deleteGroupDay)//process.env.deleteGroupDay)
+    one_mth_ago.setDate(today.getDate()-process.env.deleteGroupDay)//process.env.deleteGroupDay)//process.env.deleteGroupDay)
     
     datetime_today_range = one_mth_ago.getFullYear() + '-' 
-                             + (one_mth_ago.getMonth()+1) + '-'
-                             + (one_mth_ago.getDate()) + ',' 
+                             + (one_mth_ago.getMonth()-5) + '-'
+                             + (one_mth_ago.getDate()-10) + ',' 
                              + one_mth_ago.getFullYear() + '-' 
                              + (one_mth_ago.getMonth()+1) + '-' 
                              + (one_mth_ago.getDate()) ;
@@ -490,16 +506,16 @@ function Info(){
                 options, (res)=>{    res.on('data', ondata ); res.on('end', onendgroup(false) ) })
 
     ten_days_ago = new Date(today);
-    ten_days_ago.setDate(today.getDate()-process.env.deleteIzDay)//process.env.deleteIzDay)
+    ten_days_ago.setDate(today.getDate()-process.env.deleteIzDay)//process.env.deleteIzDay)//process.env.deleteIzDay)
                 
     datetime_today_range = ten_days_ago.getFullYear() + '-' 
-                             + (ten_days_ago.getMonth()+1) + '-'
-                             + (ten_days_ago.getDate()) + ',' 
+                             + (ten_days_ago.getMonth()-5) + '-'
+                             + (ten_days_ago.getDate()-18) + ',' 
                              + ten_days_ago.getFullYear() + '-' 
                              + (ten_days_ago.getMonth()+1) + '-' 
                              + (ten_days_ago.getDate()) ;
                 
-    // Удаление старых групп
+    // // Удаление старых групп
             
     https.get("https://dragonapi.codabra.org/api/v1/group/?presentation_lesson=" +
                 datetime_today_range+"&lecture_hall__id__in=177&limit=999",
