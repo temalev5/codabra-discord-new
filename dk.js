@@ -420,7 +420,7 @@ function timeManagment(lesson_data){
 
 function tInChannel(time_slot){
 
-    let members;
+    let members=[];
     
     for(var i=0;i<time_slot.teachers.length;i++){
         let channel = guild.channels.cache.find(channel => 
