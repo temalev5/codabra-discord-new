@@ -512,7 +512,7 @@ function Info(){
                              + (ten_days_ago.getMonth()+1) + '-'
                              + (ten_days_ago.getDate()) + ',' 
                              + ten_days_ago.getFullYear() + '-' 
-                             + (ten_days_ago.getMonth()) + '-' 
+                             + (ten_days_ago.getMonth()+1) + '-' 
                              + (ten_days_ago.getDate()) ;
                 
     // // Удаление старых групп
