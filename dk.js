@@ -324,18 +324,20 @@ function deleteGroups(groups){
         let channel = guild.channels.cache.find( ch => ch.name == groups[i].toLowerCase().replace(/\./gm,"").replace(/\s?\((.*)\)/gm,"") )
         if (channel)
             channel.delete()
-                   .then( ()=> { send(admin, "Удален текстовый канал " + channel.name) } )
+                   .then( (ch)=> { 
+                       send(admin, "Удален текстовый канал " + ch.name) 
+                    } )
                    .catch( (err)=> { send(admin, "Не удалось удалить текстовый канал " + channel.name + " "+ err) });
                    
         channel = guild.channels.cache.find( ch => ch.name == groups[i].toUpperCase().replace(/\s?\((.*)\)/gm,"") )
         if (channel)
             channel.delete()
-                    .then( ()=> { send(admin, "Удален голосовой канал " + channel.name) } )
+                    .then( (ch)=> { send(admin, "Удален голосовой канал " + ch.name) } )
                     .catch( (err)=> { send(admin, "Не удалось удалить голосовой канал " + channel.name) });
         let role = guild.roles.cache.find( r => r.name == "Ученик " +  groups[i].toUpperCase().replace(/\s?\((.*)\)/gm,"") )
         if (role)
             role.delete()
-                .then( ()=> { send(admin, "Удалена роль " + channel.name) })
+                .then( (ch)=> { send(admin, "Удалена роль " + ch.name) })
                 .catch( (err)=> { send(admin, "Не удалось удалить роль " + channel.name) });
     }
 }

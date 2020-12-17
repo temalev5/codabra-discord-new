@@ -486,11 +486,11 @@ function Info(){
                 options, response)
 
     one_mth_ago = new Date(today);
-    one_mth_ago.setDate(today.getDate()-process.env.deleteGroupDay)//process.env.deleteGroupDay)//process.env.deleteGroupDay)
+    one_mth_ago.setDate(today.getDate() - process.env.deleteGroupDay)//process.env.deleteGroupDay)//process.env.deleteGroupDay)
     
     datetime_today_range = one_mth_ago.getFullYear() + '-' 
-                             + (one_mth_ago.getMonth()-5) + '-'
-                             + (one_mth_ago.getDate()-10) + ',' 
+                             + (one_mth_ago.getMonth()+1) + '-'
+                             + (one_mth_ago.getDate()) + ',' 
                              + one_mth_ago.getFullYear() + '-' 
                              + (one_mth_ago.getMonth()+1) + '-' 
                              + (one_mth_ago.getDate()) ;
@@ -506,13 +506,13 @@ function Info(){
                 options, (res)=>{    res.on('data', ondata ); res.on('end', onendgroup(false) ) })
 
     ten_days_ago = new Date(today);
-    ten_days_ago.setDate(today.getDate()-process.env.deleteIzDay)//process.env.deleteIzDay)//process.env.deleteIzDay)
+    ten_days_ago.setDate(today.getDate() - process.env.deleteIzDay)//process.env.deleteIzDay)//process.env.deleteIzDay)
                 
     datetime_today_range = ten_days_ago.getFullYear() + '-' 
-                             + (ten_days_ago.getMonth()-5) + '-'
-                             + (ten_days_ago.getDate()-18) + ',' 
+                             + (ten_days_ago.getMonth()+1) + '-'
+                             + (ten_days_ago.getDate()) + ',' 
                              + ten_days_ago.getFullYear() + '-' 
-                             + (ten_days_ago.getMonth()+1) + '-' 
+                             + (ten_days_ago.getMonth()) + '-' 
                              + (ten_days_ago.getDate()) ;
                 
     // // Удаление старых групп
